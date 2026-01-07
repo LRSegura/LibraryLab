@@ -1,7 +1,7 @@
-package menmbership.port;
+package membership.port;
 
-import menmbership.model.Member;
-import menmbership.model.MemberStatus;
+import membership.model.Member;
+import membership.model.MemberStatus;
 
 import java.util.List;
 import java.util.Optional;

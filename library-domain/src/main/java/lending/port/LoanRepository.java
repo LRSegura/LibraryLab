@@ -6,7 +6,7 @@ import catalog.model.Book;
 import common.BaseRepository;
 import lending.model.Loan;
 import lending.model.LoanStatus;
-import menmbership.model.Member;
+import membership.model.Member;
 
 import java.time.LocalDate;
 import java.util.List;

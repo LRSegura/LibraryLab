@@ -1,4 +1,4 @@
-package menmbership.model;
+package membership.model;
 
 public enum MemberStatus {
     ACTIVE,

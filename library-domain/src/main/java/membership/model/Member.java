@@ -1,4 +1,4 @@
-package menmbership.model;
+package membership.model;
 
 import common.BaseEntity;
 import jakarta.persistence.*;

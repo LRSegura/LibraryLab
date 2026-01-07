@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import menmbership.model.Member;
+import membership.model.Member;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
