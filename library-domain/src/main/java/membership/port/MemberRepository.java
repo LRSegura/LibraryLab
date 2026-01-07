@@ -1,28 +1,21 @@
 package membership.port;
 
+import common.BaseRepository;
 import membership.model.Member;
 import membership.model.MemberStatus;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository {
-
-    Member save(Member member);
-
-    Optional<Member> findById(Long id);
+public interface MemberRepository extends BaseRepository<Member> {
 
     Optional<Member> findByMembershipNumber(String membershipNumber);
 
     Optional<Member> findByEmail(String email);
 
-    List<Member> findAll();
-
     List<Member> findByStatus(MemberStatus status);
 
     List<Member> findByNameContaining(String name);
-
-    void delete(Member member);
 
     boolean existsByEmail(String email);
 

@@ -6,11 +6,11 @@ import lending.dto.LoanDTO;
 import lending.model.Loan;
 import lending.model.LoanStatus;
 import lending.port.LoanRepository;
-import menmbership.model.Member;
-import menmbership.port.MemberRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import membership.model.Member;
+import membership.port.MemberRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,14 +19,22 @@ import java.util.Optional;
 @ApplicationScoped
 public class LoanService {
 
-    @Inject
     private LoanRepository loanRepository;
 
-    @Inject
     private BookRepository bookRepository;
 
-    @Inject
     private MemberRepository memberRepository;
+
+    @Inject
+    public LoanService(LoanRepository loanRepository, BookRepository bookRepository, MemberRepository memberRepository) {
+        this.loanRepository = loanRepository;
+        this.bookRepository = bookRepository;
+        this.memberRepository = memberRepository;
+    }
+
+    public LoanService(){
+        //Required by proxy
+    }
 
     public List<LoanDTO> findAll() {
         return loanRepository.findAll().stream()
