@@ -8,20 +8,30 @@ import catalog.port.CategoryRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import lombok.extern.log4j.Log4j;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class BookService {
 
     private BookRepository bookRepository;
     private CategoryRepository categoryRepository;
+    private Validator validator;
+    Logger logger = Logger.getLogger(BookService.class.getName());
 
     @Inject
-    public BookService(BookRepository bookRepository, CategoryRepository categoryRepository) {
+    public BookService(BookRepository bookRepository, CategoryRepository categoryRepository, Validator validator) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
+        this.validator = validator;
     }
 
     public BookService() {
@@ -82,6 +92,15 @@ public class BookService {
             Category category = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getCategoryId()));
             book.setCategory(category);
+        }
+
+        Set<ConstraintViolation<Book>> violations = validator.validate(book);
+        if (!violations.isEmpty()) {
+            violations.forEach(v -> {
+              String message = String.format("Validation error - %s: %s", v.getPropertyPath(), v.getMessage());
+              logger.log(Level.SEVERE, message);
+            });
+            throw new ConstraintViolationException(violations);
         }
 
         bookRepository.save(book);

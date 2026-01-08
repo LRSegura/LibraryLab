@@ -3,8 +3,6 @@ package web.bean;
 import catalog.dto.BookDTO;
 import catalog.usecase.BookService;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -23,7 +21,7 @@ import java.util.List;
 @ViewScoped
 @Getter
 @Setter
-public class LoanBean implements Serializable {
+public class LoanBean extends BasicBean implements Serializable {
 
     private LoanService loanService;
     private BookService bookService;
@@ -85,46 +83,46 @@ public class LoanBean implements Serializable {
     public void borrowBook() {
         try {
             if (selectedBookId == null || selectedMemberId == null) {
-                addMessage(FacesMessage.SEVERITY_WARN, "Warning", "Please select both a book and a member");
+                addWarnMessage( "Please select both a book and a member");
                 return;
             }
             loanService.borrowBook(selectedBookId, selectedMemberId, loanNotes);
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book borrowed successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book borrowed successfully");
             initNewLoan();
             loadLoans();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error borrowing book.");
         }
     }
 
     public void returnBook(LoanDTO loan) {
         try {
             loanService.returnBook(loan.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book returned successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book returned successfully");
             loadLoans();
             loadAvailableBooks();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error returning book.");
         }
     }
 
     public void renewLoan(LoanDTO loan) {
         try {
             loanService.renewLoan(loan.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Loan renewed successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Loan renewed successfully");
             loadLoans();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error renewing loan.");
         }
     }
 
     public void markAsLost(LoanDTO loan) {
         try {
             loanService.markAsLost(loan.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book marked as lost");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book marked as lost");
             loadLoans();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error marking book as lost.");
         }
     }
 
@@ -148,10 +146,5 @@ public class LoanBean implements Serializable {
             case OVERDUE -> "danger";
             case LOST -> "warning";
         };
-    }
-
-    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(severity, summary, detail));
     }
 }

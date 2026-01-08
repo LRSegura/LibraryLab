@@ -1,8 +1,6 @@
 package web.bean;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -19,7 +17,7 @@ import java.util.List;
 @ViewScoped
 @Getter
 @Setter
-public class MemberBean implements Serializable {
+public class MemberBean extends BasicBean implements Serializable {
 
 
     private MemberService memberService;
@@ -76,55 +74,56 @@ public class MemberBean implements Serializable {
         try {
             if (editMode && selectedMember != null) {
                 memberService.update(selectedMember.getId(), selectedMember);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Member updated successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member updated successfully");
             } else {
                 memberService.create(newMember);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Member created successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member created successfully");
                 initNewMember();
             }
             loadMembers();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error saving member.");
         }
     }
 
     public void delete(MemberDTO member) {
         try {
             memberService.delete(member.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Member deleted successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member deleted successfully");
             loadMembers();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error deleting member.");
         }
     }
 
     public void suspend(MemberDTO member) {
         try {
             memberService.suspend(member.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Member suspended");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member suspended");
             loadMembers();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error suspending member.");
+            addErrorMessage("Error suspending member.");
         }
     }
 
     public void activate(MemberDTO member) {
         try {
             memberService.activate(member.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Member activated");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member activated");
             loadMembers();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error activating member.");
         }
     }
 
     public void renewMembership(MemberDTO member) {
         try {
             memberService.renewMembership(member.getId(), 1);
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Membership renewed for 1 year");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Membership renewed for 1 year");
             loadMembers();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error renewing membership.");
         }
     }
 
@@ -139,10 +138,5 @@ public class MemberBean implements Serializable {
             case EXPIRED -> "danger";
             case INACTIVE -> "secondary";
         };
-    }
-
-    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(severity, summary, detail));
     }
 }

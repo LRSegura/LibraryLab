@@ -3,8 +3,6 @@ package web.bean;
 import catalog.dto.CategoryDTO;
 import catalog.usecase.CategoryService;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -18,7 +16,7 @@ import java.util.List;
 @ViewScoped
 @Getter
 @Setter
-public class CategoryBean implements Serializable {
+public class CategoryBean extends BasicBean implements Serializable {
 
 
     private CategoryService categoryService;
@@ -66,30 +64,26 @@ public class CategoryBean implements Serializable {
         try {
             if (editMode && selectedCategory != null) {
                 categoryService.update(selectedCategory.getId(), selectedCategory);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Category updated successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category updated successfully");
+                loadCategories();
             } else {
                 categoryService.create(newCategory);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Category created successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category created successfully");
                 initNewCategory();
             }
             loadCategories();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error saving category.");
         }
     }
 
     public void delete(CategoryDTO category) {
         try {
             categoryService.delete(category.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Category deleted successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category deleted successfully");
             loadCategories();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error deleting category.");
         }
-    }
-
-    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(severity, summary, detail));
     }
 }

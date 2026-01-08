@@ -21,11 +21,11 @@ public class Category extends BaseEntity {
 
 
     @NotBlank(message = "The name is required")
-    @Size(max = 100)
+    @Size(max = 100, message = "The name must be less than 100 characters")
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @Size(max = 500)
+    @Size(max = 500, message = "The description must be less than 500 characters")
     @Column(length = 500)
     private String description;
 

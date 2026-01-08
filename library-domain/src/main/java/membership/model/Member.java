@@ -18,17 +18,17 @@ import java.time.LocalDate;
 public class Member extends BaseEntity {
 
     @NotBlank(message = "The membership number is required")
-    @Size(max = 20)
+    @Size(max = 20, message = "The membership number must be less than 20 characters")
     @Column(name = "membership_number", nullable = false, unique = true, length = 20)
     private String membershipNumber;
 
     @NotBlank(message = "The first name is required")
-    @Size(max = 100)
+    @Size(max = 100, message = "The first name must be less than 100 characters")
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
     @NotBlank(message = "The last name is required")
-    @Size(max = 100)
+    @Size(max = 100, message = "The last name must be less than 100 characters")
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
@@ -37,11 +37,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "The phone number must be less than 20 characters")
     @Column(length = 20)
     private String phone;
 
-    @Size(max = 255)
+    @Size(max = 255, message = "The address must be less than 255 characters")
     private String address;
 
     @PastOrPresent
@@ -55,7 +55,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20)
     private MemberStatus status = MemberStatus.ACTIVE;
 
-    @Min(0)
+    @Min(value = 0, message = "The active loans count cannot be negative")
     @Column(name = "active_loans", nullable = false)
     private int activeLoans = 0;
 

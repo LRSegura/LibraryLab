@@ -18,32 +18,32 @@ import java.time.LocalDate;
 public class Book extends BaseEntity {
 
     @NotBlank(message = "The ISBN is required")
-    @Size(min = 10, max = 17)
+    @Size(message = "ISBN must be between 10 and 17 characters", min = 10, max = 17)
     @Column(nullable = false, unique = true, length = 17)
     private String isbn;
 
     @NotBlank(message = "The title is required")
-    @Size(max = 255)
+    @Size(max = 255, message = "The title must be less than 255 characters")
     @Column(nullable = false)
     private String title;
 
     @NotBlank(message = "The author is required")
-    @Size(max = 255)
+    @Size(max = 255, message = "The author name must be less than 255 characters")
     @Column(nullable = false)
     private String author;
 
-    @Size(max = 100)
+    @Size(max = 100, message = "The publisher name must be less than 100 characters")
     @Column(length = 100)
     private String publisher;
 
     @PastOrPresent
     private LocalDate publicationDate;
 
-    @Min(1)
+    @Min(value = 1, message = "The total number of copies must be at least 1")
     @Column(nullable = false)
     private int totalCopies = 1;
 
-    @Min(0)
+    @Min(value = 0, message = "The number of available copies must be greater than or equal to zero")
     @Column(nullable = false)
     private int availableCopies = 1;
 

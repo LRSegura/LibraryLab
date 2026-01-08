@@ -6,11 +6,10 @@ import catalog.model.BookStatus;
 import catalog.usecase.BookService;
 import catalog.usecase.CategoryService;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +20,7 @@ import java.util.List;
 @ViewScoped
 @Getter
 @Setter
-public class BookBean implements Serializable {
+public class BookBean extends BasicBean implements Serializable {
 
     private BookService bookService;
     private CategoryService categoryService;
@@ -86,25 +85,27 @@ public class BookBean implements Serializable {
         try {
             if (editMode && selectedBook != null) {
                 bookService.update(selectedBook.getId(), selectedBook);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book updated successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book updated successfully");
             } else {
                 bookService.create(newBook);
-                addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book created successfully");
+                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book created successfully");
                 initNewBook();
             }
             loadBooks();
+        } catch (ConstraintViolationException exception) {
+            exception.getConstraintViolations().forEach(violation -> addErrorMessage(violation.getMessage()));
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error creating book.");
         }
     }
 
     public void delete(BookDTO book) {
         try {
             bookService.delete(book.getId());
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", "Book deleted successfully");
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book deleted successfully");
             loadBooks();
         } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            addErrorMessage("Error deleting book.");
         }
     }
 
@@ -119,10 +120,5 @@ public class BookBean implements Serializable {
                 .map(CategoryDTO::getName)
                 .findFirst()
                 .orElse("-");
-    }
-
-    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(severity, summary, detail));
     }
 }

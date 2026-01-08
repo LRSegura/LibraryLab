@@ -24,21 +24,21 @@ public class Loan extends BaseEntity {
     private static final int DEFAULT_LOAN_DAYS = 14;
     private static final int MAX_RENEWALS = 2;
 
-    @NotNull
+    @NotNull(message = "The book is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @NotNull
+    @NotNull(message = "The member is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @NotNull
+    @NotNull(message = "The loan date is required")
     @Column(name = "loan_date", nullable = false)
     private LocalDate loanDate;
 
-    @NotNull
+    @NotNull(message = "The due date is required")
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
