@@ -81,7 +81,7 @@ public class LoanBean extends BasicBean implements Serializable {
     }
 
     public void borrowBook() {
-        try {
+        Runnable operation = () -> {
             if (selectedBookId == null || selectedMemberId == null) {
                 addWarnMessage( "Please select both a book and a member");
                 return;
@@ -90,40 +90,38 @@ public class LoanBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book borrowed successfully");
             initNewLoan();
             loadLoans();
-        } catch (Exception e) {
-            addErrorMessage("Error borrowing book.");
-        }
+        };
+        executeOperation(operation, "Borrowing book");
     }
 
     public void returnBook(LoanDTO loan) {
-        try {
+        Runnable operation = () -> {
             loanService.returnBook(loan.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book returned successfully");
             loadLoans();
             loadAvailableBooks();
-        } catch (Exception e) {
-            addErrorMessage("Error returning book.");
-        }
+        };
+        executeOperation(operation, "Returning book");
     }
 
     public void renewLoan(LoanDTO loan) {
-        try {
+
+        Runnable operation = () -> {
             loanService.renewLoan(loan.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Loan renewed successfully");
             loadLoans();
-        } catch (Exception e) {
-            addErrorMessage("Error renewing loan.");
-        }
+        };
+        executeOperation(operation, "Renewing loan");
     }
 
     public void markAsLost(LoanDTO loan) {
-        try {
+
+        Runnable operation = () -> {
             loanService.markAsLost(loan.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book marked as lost");
             loadLoans();
-        } catch (Exception e) {
-            addErrorMessage("Error marking book as lost.");
-        }
+        };
+        executeOperation(operation, "Marking book as lost");
     }
 
     public void filterByStatus() {

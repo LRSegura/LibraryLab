@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets"
@@ -107,27 +107,30 @@
                     <p:outputPanel id="bookDialogContent">
                         <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
                             <p:outputLabel for="isbn" value="ISBN:"/>
-                            <p:inputText id="isbn" 
+                            <p:inputText id="isbn"
                                          value="#{bookBean.editMode ? bookBean.selectedBook.isbn : bookBean.newBook.isbn}"
-                                         required="true" styleClass="w-full"/>
+                                         required="true" styleClass="w-full"
+                                         requiredMessage="ISBN is required to identify the book."/>
 
                             <p:outputLabel for="title" value="Title:"/>
-                            <p:inputText id="title" 
+                            <p:inputText id="title"
                                          value="#{bookBean.editMode ? bookBean.selectedBook.title : bookBean.newBook.title}"
-                                         required="true" styleClass="w-full"/>
+                                         required="true" styleClass="w-full"
+                                         requiredMessage="Title is required."/>
 
                             <p:outputLabel for="author" value="Author:"/>
-                            <p:inputText id="author" 
+                            <p:inputText id="author"
                                          value="#{bookBean.editMode ? bookBean.selectedBook.author : bookBean.newBook.author}"
-                                         required="true" styleClass="w-full"/>
+                                         required="true" styleClass="w-full"
+                                         requiredMessage="Author is required."/>
 
                             <p:outputLabel for="publisher" value="Publisher:"/>
-                            <p:inputText id="publisher" 
+                            <p:inputText id="publisher"
                                          value="#{bookBean.editMode ? bookBean.selectedBook.publisher : bookBean.newBook.publisher}"
                                          styleClass="w-full"/>
 
                             <p:outputLabel for="category" value="Category:"/>
-                            <p:selectOneMenu id="category" 
+                            <p:selectOneMenu id="category"
                                              value="#{bookBean.editMode ? bookBean.selectedBook.categoryId : bookBean.newBook.categoryId}"
                                              styleClass="w-full">
                                 <f:selectItem itemLabel="-- Select --" itemValue=""/>
@@ -136,12 +139,12 @@
                             </p:selectOneMenu>
 
                             <p:outputLabel for="totalCopies" value="Total Copies:"/>
-                            <p:spinner id="totalCopies" 
+                            <p:spinner id="totalCopies"
                                        value="#{bookBean.editMode ? bookBean.selectedBook.totalCopies : bookBean.newBook.totalCopies}"
                                        min="1" max="100" styleClass="w-full"/>
 
                             <p:outputLabel for="status" value="Status:"/>
-                            <p:selectOneMenu id="status" 
+                            <p:selectOneMenu id="status"
                                              value="#{bookBean.editMode ? bookBean.selectedBook.status : bookBean.newBook.status}"
                                              styleClass="w-full">
                                 <f:selectItems value="#{bookBean.statuses}" var="st"

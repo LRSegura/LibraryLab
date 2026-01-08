@@ -81,12 +81,12 @@
                     <p:outputPanel id="categoryDialogContent">
                         <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
                             <p:outputLabel for="name" value="Name:"/>
-                            <p:inputText id="name" 
+                            <p:inputText id="name"
                                          value="#{categoryBean.editMode ? categoryBean.selectedCategory.name : categoryBean.newCategory.name}"
-                                         required="true" styleClass="w-full"/>
+                                         required="true" requiredMessage="Name is required" styleClass="w-full"/>
 
                             <p:outputLabel for="description" value="Description:"/>
-                            <p:inputTextarea id="description" 
+                            <p:inputTextarea id="description"
                                              value="#{categoryBean.editMode ? categoryBean.selectedCategory.description : categoryBean.newCategory.description}"
                                              rows="3" styleClass="w-full"/>
                         </h:panelGrid>

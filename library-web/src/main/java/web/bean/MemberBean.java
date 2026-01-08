@@ -33,7 +33,7 @@ public class MemberBean extends BasicBean implements Serializable {
         this.memberService = memberService;
     }
 
-    public MemberBean(){
+    public MemberBean() {
         //Required by proxy
     }
 
@@ -71,7 +71,8 @@ public class MemberBean extends BasicBean implements Serializable {
     }
 
     public void save() {
-        try {
+
+        Runnable operation = () -> {
             if (editMode && selectedMember != null) {
                 memberService.update(selectedMember.getId(), selectedMember);
                 addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member updated successfully");
@@ -81,50 +82,46 @@ public class MemberBean extends BasicBean implements Serializable {
                 initNewMember();
             }
             loadMembers();
-        } catch (Exception e) {
-            addErrorMessage("Error saving member.");
-        }
+        };
+        executeOperation(operation, "Saving member");
     }
 
     public void delete(MemberDTO member) {
-        try {
+
+        Runnable operation = () -> {
             memberService.delete(member.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member deleted successfully");
             loadMembers();
-        } catch (Exception e) {
-            addErrorMessage("Error deleting member.");
-        }
+        };
+        executeOperation(operation, "Deleting member");
     }
 
     public void suspend(MemberDTO member) {
-        try {
+        Runnable operation = () -> {
             memberService.suspend(member.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member suspended");
             loadMembers();
-        } catch (Exception e) {
-            addErrorMessage("Error suspending member.");
-            addErrorMessage("Error suspending member.");
-        }
+        };
+        executeOperation(operation, "Suspending member");
     }
 
     public void activate(MemberDTO member) {
-        try {
+
+        Runnable operation = () -> {
             memberService.activate(member.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member activated");
             loadMembers();
-        } catch (Exception e) {
-            addErrorMessage("Error activating member.");
-        }
+        };
+        executeOperation(operation, "Activating member");
     }
 
     public void renewMembership(MemberDTO member) {
-        try {
+        Runnable operation = () -> {
             memberService.renewMembership(member.getId(), 1);
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Membership renewed for 1 year");
             loadMembers();
-        } catch (Exception e) {
-            addErrorMessage("Error renewing membership.");
-        }
+        };
+        executeOperation(operation, "Renewing membership");
     }
 
     public MemberStatus[] getStatuses() {

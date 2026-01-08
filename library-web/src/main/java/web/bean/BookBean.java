@@ -9,7 +9,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -82,7 +81,7 @@ public class BookBean extends BasicBean implements Serializable {
     }
 
     public void save() {
-        try {
+        Runnable operation = () -> {
             if (editMode && selectedBook != null) {
                 bookService.update(selectedBook.getId(), selectedBook);
                 addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book updated successfully");
@@ -92,21 +91,17 @@ public class BookBean extends BasicBean implements Serializable {
                 initNewBook();
             }
             loadBooks();
-        } catch (ConstraintViolationException exception) {
-            exception.getConstraintViolations().forEach(violation -> addErrorMessage(violation.getMessage()));
-        } catch (Exception e) {
-            addErrorMessage("Error creating book.");
-        }
+        };
+        executeOperation(operation, "Saving book");
     }
 
     public void delete(BookDTO book) {
-        try {
+        Runnable operation = () -> {
             bookService.delete(book.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book deleted successfully");
             loadBooks();
-        } catch (Exception e) {
-            addErrorMessage("Error deleting book.");
-        }
+        };
+        executeOperation(operation, "Deleting book");
     }
 
     public BookStatus[] getStatuses() {

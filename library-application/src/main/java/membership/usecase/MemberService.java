@@ -1,5 +1,6 @@
 package membership.usecase;
 
+import common.BaseService;
 import membership.dto.MemberDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class MemberService {
+public class MemberService extends BaseService<Member> {
 
     private MemberRepository memberRepository;
 
@@ -68,6 +69,7 @@ public class MemberService {
         }
 
         Member member = dto.toEntity();
+        validateFieldsConstraint(member);
         memberRepository.save(member);
         return MemberDTO.fromEntity(member);
     }
@@ -83,6 +85,7 @@ public class MemberService {
         }
 
         dto.updateEntity(member);
+        validateFieldsConstraint(member);
         return MemberDTO.fromEntity(member);
     }
 

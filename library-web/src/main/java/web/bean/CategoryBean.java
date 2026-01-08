@@ -61,7 +61,7 @@ public class CategoryBean extends BasicBean implements Serializable {
     }
 
     public void save() {
-        try {
+        Runnable operation = () -> {
             if (editMode && selectedCategory != null) {
                 categoryService.update(selectedCategory.getId(), selectedCategory);
                 addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category updated successfully");
@@ -72,18 +72,16 @@ public class CategoryBean extends BasicBean implements Serializable {
                 initNewCategory();
             }
             loadCategories();
-        } catch (Exception e) {
-            addErrorMessage("Error saving category.");
-        }
+        };
+        executeOperation(operation, "Saving category");
     }
 
     public void delete(CategoryDTO category) {
-        try {
+        Runnable operation = () -> {
             categoryService.delete(category.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category deleted successfully");
             loadCategories();
-        } catch (Exception e) {
-            addErrorMessage("Error deleting category.");
-        }
+        };
+        executeOperation(operation, "Deleting category");
     }
 }

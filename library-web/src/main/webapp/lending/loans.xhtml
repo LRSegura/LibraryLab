@@ -152,7 +152,8 @@
                         <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
                             <p:outputLabel for="book" value="Book:"/>
                             <p:selectOneMenu id="book" value="#{loanBean.selectedBookId}"
-                                             required="true" styleClass="w-full"
+                                             required="true" requiredMessage="Book is required"
+                                             styleClass="w-full"
                                              filter="true" filterMatchMode="contains">
                                 <f:selectItem itemLabel="-- Select a Book --" itemValue=""/>
                                 <f:selectItems value="#{loanBean.availableBooks}" var="book"
@@ -161,11 +162,12 @@
 
                             <p:outputLabel for="member" value="Member:"/>
                             <p:selectOneMenu id="member" value="#{loanBean.selectedMemberId}"
-                                             required="true" styleClass="w-full"
+                                             required="true" requiredMessage="Member is required"
+                                             styleClass="w-full"
                                              filter="true" filterMatchMode="contains">
                                 <f:selectItem itemLabel="-- Select a Member --" itemValue=""/>
                                 <f:selectItems value="#{loanBean.activeMembers}" var="member"
-                                               itemLabel="#{member.fullName} (#{member.membershipNumber})" 
+                                               itemLabel="#{member.fullName} (#{member.membershipNumber})"
                                                itemValue="#{member.id}"/>
                             </p:selectOneMenu>
 

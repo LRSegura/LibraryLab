@@ -3,6 +3,7 @@ package catalog.usecase;
 import catalog.dto.CategoryDTO;
 import catalog.model.Category;
 import catalog.port.CategoryRepository;
+import common.BaseService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -11,10 +12,18 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class CategoryService {
+public class CategoryService extends BaseService<Category> {
+
+    private CategoryRepository categoryRepository;
+
+    public CategoryService() {
+        //Required by proxy
+    }
 
     @Inject
-    private CategoryRepository categoryRepository;
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public List<CategoryDTO> findAll() {
         return categoryRepository.findAll().stream()
@@ -38,6 +47,7 @@ public class CategoryService {
             throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
         }
         Category category = dto.toEntity();
+        validateFieldsConstraint(category);
         categoryRepository.save(category);
         return CategoryDTO.fromEntity(category);
     }
@@ -53,6 +63,7 @@ public class CategoryService {
         }
 
         dto.updateEntity(category);
+        validateFieldsConstraint(category);
         categoryRepository.update(category);
         return CategoryDTO.fromEntity(category);
     }

@@ -2,6 +2,7 @@ package lending.usecase;
 
 import catalog.model.Book;
 import catalog.port.BookRepository;
+import common.BaseService;
 import lending.dto.LoanDTO;
 import lending.model.Loan;
 import lending.model.LoanStatus;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class LoanService {
+public class LoanService extends BaseService<Loan> {
 
     private LoanRepository loanRepository;
 

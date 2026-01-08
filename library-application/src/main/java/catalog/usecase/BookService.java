@@ -5,33 +5,26 @@ import catalog.model.Book;
 import catalog.model.Category;
 import catalog.port.BookRepository;
 import catalog.port.CategoryRepository;
+import common.BaseService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validator;
-import lombok.extern.log4j.Log4j;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @ApplicationScoped
-public class BookService {
+public class BookService extends BaseService<Book> {
 
     private BookRepository bookRepository;
     private CategoryRepository categoryRepository;
-    private Validator validator;
-    Logger logger = Logger.getLogger(BookService.class.getName());
+
+
 
     @Inject
-    public BookService(BookRepository bookRepository, CategoryRepository categoryRepository, Validator validator) {
+    public BookService(BookRepository bookRepository, CategoryRepository categoryRepository) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
-        this.validator = validator;
     }
 
     public BookService() {
@@ -94,18 +87,12 @@ public class BookService {
             book.setCategory(category);
         }
 
-        Set<ConstraintViolation<Book>> violations = validator.validate(book);
-        if (!violations.isEmpty()) {
-            violations.forEach(v -> {
-              String message = String.format("Validation error - %s: %s", v.getPropertyPath(), v.getMessage());
-              logger.log(Level.SEVERE, message);
-            });
-            throw new ConstraintViolationException(violations);
-        }
+        validateFieldsConstraint(book);
 
         bookRepository.save(book);
         return BookDTO.fromEntity(book);
     }
+
 
     @Transactional
     public BookDTO update(Long id, BookDTO dto) {
@@ -127,6 +114,7 @@ public class BookService {
             book.setCategory(null);
         }
 
+        validateFieldsConstraint(book);
         bookRepository.update(book);
         return BookDTO.fromEntity(book);
     }
