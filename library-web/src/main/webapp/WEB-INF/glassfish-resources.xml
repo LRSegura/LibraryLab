@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+        "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+    <!-- JDBC Connection Pool -->
+    <jdbc-connection-pool name="LibraryPool"
+                          res-type="javax.sql.DataSource"
+                          datasource-classname="org.postgresql.ds.PGSimpleDataSource"
+                          pool-resize-quantity="2"
+                          max-pool-size="32"
+                          steady-pool-size="8"
+                          statement-timeout-in-seconds="30">
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="5432"/>
+        <property name="databaseName" value="librarydb"/>
+        <property name="user" value="library_user"/>
+        <property name="password" value="library_password"/>
+    </jdbc-connection-pool>
+
+    <!-- JDBC Resource -->
+    <jdbc-resource pool-name="LibraryPool" jndi-name="jdbc/libraryDS"/>
+</resources>

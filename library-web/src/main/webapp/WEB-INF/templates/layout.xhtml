@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title><ui:insert name="title">LibraryLab</ui:insert></title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        .layout-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        .layout-sidebar {
+            width: 250px;
+            background: var(--surface-800);
+            color: var(--surface-0);
+            padding: 1rem;
+        }
+        .layout-sidebar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--surface-600);
+            margin-bottom: 1rem;
+        }
+        .layout-sidebar .menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--surface-200);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+            transition: background 0.2s;
+        }
+        .layout-sidebar .menu-item:hover {
+            background: var(--surface-700);
+            color: var(--surface-0);
+        }
+        .layout-sidebar .menu-item.active {
+            background: var(--primary-color);
+            color: var(--primary-color-text);
+        }
+        .layout-sidebar .menu-section {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--surface-400);
+            margin: 1.5rem 0 0.5rem 0;
+            padding-left: 1rem;
+        }
+        .layout-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .layout-topbar {
+            background: var(--surface-0);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--surface-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .layout-content {
+            flex: 1;
+            padding: 2rem;
+            background: var(--surface-50);
+        }
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        .page-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            color: var(--surface-900);
+        }
+        .page-header p {
+            margin: 0;
+            color: var(--surface-600);
+        }
+        .card {
+            background: var(--surface-0);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
+    <ui:insert name="head"/>
+</h:head>
+
+<h:body>
+    <div class="layout-wrapper">
+        <!-- Sidebar -->
+        <div class="layout-sidebar">
+            <div class="logo">
+                <i class="pi pi-book" style="margin-right: 0.5rem;"></i>
+                LibraryLab
+            </div>
+
+            <h:link outcome="/index" styleClass="menu-item">
+                <i class="pi pi-home" style="margin-right: 0.5rem;"></i>
+                Dashboard
+            </h:link>
+
+            <div class="menu-section">Catalog</div>
+            <h:link outcome="/catalog/books" styleClass="menu-item">
+                <i class="pi pi-book" style="margin-right: 0.5rem;"></i>
+                Books
+            </h:link>
+            <h:link outcome="/catalog/categories" styleClass="menu-item">
+                <i class="pi pi-tags" style="margin-right: 0.5rem;"></i>
+                Categories
+            </h:link>
+
+            <div class="menu-section">Membership</div>
+            <h:link outcome="/membership/members" styleClass="menu-item">
+                <i class="pi pi-users" style="margin-right: 0.5rem;"></i>
+                Members
+            </h:link>
+
+            <div class="menu-section">Lending</div>
+            <h:link outcome="/lending/loans" styleClass="menu-item">
+                <i class="pi pi-arrow-right-arrow-left" style="margin-right: 0.5rem;"></i>
+                Loans
+            </h:link>
+        </div>
+
+        <!-- Main content -->
+        <div class="layout-main">
+            <div class="layout-topbar">
+                <span><ui:insert name="breadcrumb"/></span>
+                <span class="p-text-secondary">
+                    <i class="pi pi-calendar" style="margin-right: 0.5rem;"></i>
+                    <h:outputText value="#{java.time.LocalDate.now()}">
+                        <f:convertDateTime pattern="EEEE, MMMM d, yyyy"/>
+                    </h:outputText>
+                </span>
+            </div>
+
+            <div class="layout-content">
+                <ui:insert name="content"/>
+            </div>
+        </div>
+    </div>
+
+    <p:growl id="globalGrowl" showDetail="true" life="3000"/>
+</h:body>
+</html>

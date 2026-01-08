@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Categories - LibraryLab</ui:define>
+
+    <ui:define name="breadcrumb">
+        <i class="pi pi-tags"></i> Catalog / Categories
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="page-header">
+            <h1>Categories Management</h1>
+            <p>Manage book categories</p>
+        </div>
+
+        <div class="card">
+            <h:form id="categoryForm">
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="New Category" icon="pi pi-plus" 
+                                         styleClass="p-button-success mr-2"
+                                         action="#{categoryBean.initNewCategory}"
+                                         oncomplete="PF('categoryDialog').show()"
+                                         update=":categoryForm:categoryDialogContent"/>
+                        <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         action="#{categoryBean.loadCategories}"
+                                         update="categoryTable"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <p:dataTable id="categoryTable" value="#{categoryBean.categories}" var="category"
+                             paginator="true" rows="10"
+                             emptyMessage="No categories found"
+                             styleClass="mt-3">
+
+                    <p:column headerText="Name" sortBy="#{category.name}">
+                        <h:outputText value="#{category.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Description">
+                        <h:outputText value="#{category.description}"/>
+                    </p:column>
+
+                    <p:column headerText="Books" style="width: 100px; text-align: center;">
+                        <p:badge value="#{category.bookCount}"/>
+                    </p:column>
+
+                    <p:column headerText="Actions" style="width: 150px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                                         action="#{categoryBean.prepareEdit(category)}"
+                                         oncomplete="PF('categoryDialog').show()"
+                                         update=":categoryForm:categoryDialogContent">
+                            <p:tooltip value="Edit"/>
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                                         action="#{categoryBean.delete(category)}"
+                                         update="categoryTable :globalGrowl">
+                            <p:confirm header="Confirm" message="Delete this category?" icon="pi pi-exclamation-triangle"/>
+                            <p:tooltip value="Delete"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="p-button-danger"
+                                     icon="pi pi-check" onclick="PF('cd').hide()"/>
+                    <p:commandButton value="No" type="button" styleClass="p-button-secondary"
+                                     icon="pi pi-times" onclick="PF('cd').hide()"/>
+                </p:confirmDialog>
+
+                <!-- Category Dialog -->
+                <p:dialog header="#{categoryBean.editMode ? 'Edit Category' : 'New Category'}" 
+                          widgetVar="categoryDialog" modal="true" 
+                          showEffect="fade" hideEffect="fade"
+                          responsive="true" width="450">
+                    <p:outputPanel id="categoryDialogContent">
+                        <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
+                            <p:outputLabel for="name" value="Name:"/>
+                            <p:inputText id="name" 
+                                         value="#{categoryBean.editMode ? categoryBean.selectedCategory.name : categoryBean.newCategory.name}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="description" value="Description:"/>
+                            <p:inputTextarea id="description" 
+                                             value="#{categoryBean.editMode ? categoryBean.selectedCategory.description : categoryBean.newCategory.description}"
+                                             rows="3" styleClass="w-full"/>
+                        </h:panelGrid>
+
+                        <div class="flex justify-content-end mt-3">
+                            <p:commandButton value="Cancel" icon="pi pi-times" 
+                                             styleClass="p-button-text"
+                                             onclick="PF('categoryDialog').hide()" type="button"/>
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             styleClass="p-button-success ml-2"
+                                             action="#{categoryBean.save}"
+                                             update="categoryTable :globalGrowl"
+                                             oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"/>
+                        </div>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

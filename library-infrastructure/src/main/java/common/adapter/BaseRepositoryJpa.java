@@ -18,9 +18,18 @@ public abstract class BaseRepositoryJpa<T extends BaseEntity> implements BaseRep
 
     @SuppressWarnings("unchecked")
     protected BaseRepositoryJpa() {
-        this.entityClass = (Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass())
-                .getActualTypeArguments()[0];
+        java.lang.reflect.Type genericSuperclass = getClass().getGenericSuperclass();
+
+        // If this is a CDI proxy, the generic superclass might not be the ParameterizedType
+        // we are looking for. We loop up until we find it.
+        while (!(genericSuperclass instanceof ParameterizedType)) {
+            if (!(genericSuperclass instanceof Class)) {
+                throw new IllegalStateException("Unable to determine entity class for " + getClass());
+            }
+            genericSuperclass = ((Class<?>) genericSuperclass).getGenericSuperclass();
+        }
+
+        this.entityClass = (Class<T>) ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
     }
 
     @Override

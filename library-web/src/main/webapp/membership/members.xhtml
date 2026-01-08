@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Members - LibraryLab</ui:define>
+
+    <ui:define name="breadcrumb">
+        <i class="pi pi-users"></i> Membership / Members
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="page-header">
+            <h1>Members Management</h1>
+            <p>Manage library members</p>
+        </div>
+
+        <div class="card">
+            <h:form id="memberForm">
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="New Member" icon="pi pi-plus" 
+                                         styleClass="p-button-success mr-2"
+                                         action="#{memberBean.initNewMember}"
+                                         oncomplete="PF('memberDialog').show()"
+                                         update=":memberForm:memberDialogContent"/>
+                        <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         action="#{memberBean.loadMembers}"
+                                         update="memberTable"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <p:dataTable id="memberTable" value="#{memberBean.members}" var="member"
+                             filteredValue="#{memberBean.filteredMembers}"
+                             paginator="true" rows="10"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,20,50"
+                             emptyMessage="No members found"
+                             styleClass="mt-3">
+
+                    <f:facet name="header">
+                        <div class="flex justify-content-between align-items-center">
+                            <span>Library Members</span>
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('memberTableWidget').filter()" 
+                                         placeholder="Search..."/>
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="Membership #" sortBy="#{member.membershipNumber}">
+                        <h:outputText value="#{member.membershipNumber}" styleClass="font-bold"/>
+                    </p:column>
+
+                    <p:column headerText="Name" sortBy="#{member.fullName}" filterBy="#{member.fullName}">
+                        <h:outputText value="#{member.fullName}"/>
+                    </p:column>
+
+                    <p:column headerText="Email" sortBy="#{member.email}" filterBy="#{member.email}">
+                        <h:outputText value="#{member.email}"/>
+                    </p:column>
+
+                    <p:column headerText="Phone">
+                        <h:outputText value="#{member.phone}"/>
+                    </p:column>
+
+                    <p:column headerText="Active Loans" style="text-align: center;">
+                        <p:badge value="#{member.activeLoans}" 
+                                 severity="#{member.activeLoans > 0 ? 'info' : 'secondary'}"/>
+                    </p:column>
+
+                    <p:column headerText="Expires">
+                        <h:outputText value="#{member.expirationDate}">
+                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                        </h:outputText>
+                        <p:tag value="Expired" severity="danger" 
+                               rendered="#{member.membershipExpired}" styleClass="ml-2"/>
+                    </p:column>
+
+                    <p:column headerText="Status" sortBy="#{member.status}">
+                        <p:tag value="#{member.status}" 
+                               severity="#{memberBean.getStatusSeverity(member.status)}"/>
+                    </p:column>
+
+                    <p:column headerText="Actions" style="width: 200px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                                         action="#{memberBean.prepareEdit(member)}"
+                                         oncomplete="PF('memberDialog').show()"
+                                         update=":memberForm:memberDialogContent">
+                            <p:tooltip value="Edit"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton icon="pi pi-ban" styleClass="p-button-rounded p-button-text p-button-warning"
+                                         action="#{memberBean.suspend(member)}"
+                                         update="memberTable :globalGrowl"
+                                         rendered="#{member.status == 'ACTIVE'}">
+                            <p:tooltip value="Suspend"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton icon="pi pi-check-circle" styleClass="p-button-rounded p-button-text p-button-success"
+                                         action="#{memberBean.activate(member)}"
+                                         update="memberTable :globalGrowl"
+                                         rendered="#{member.status == 'SUSPENDED'}">
+                            <p:tooltip value="Activate"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-text p-button-info"
+                                         action="#{memberBean.renewMembership(member)}"
+                                         update="memberTable :globalGrowl"
+                                         rendered="#{member.membershipExpired}">
+                            <p:tooltip value="Renew Membership"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                                         action="#{memberBean.delete(member)}"
+                                         update="memberTable :globalGrowl">
+                            <p:confirm header="Confirm" message="Delete this member?" icon="pi pi-exclamation-triangle"/>
+                            <p:tooltip value="Delete"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="p-button-danger"
+                                     icon="pi pi-check" onclick="PF('cd').hide()"/>
+                    <p:commandButton value="No" type="button" styleClass="p-button-secondary"
+                                     icon="pi pi-times" onclick="PF('cd').hide()"/>
+                </p:confirmDialog>
+
+                <!-- Member Dialog -->
+                <p:dialog header="#{memberBean.editMode ? 'Edit Member' : 'New Member'}" 
+                          widgetVar="memberDialog" modal="true" 
+                          showEffect="fade" hideEffect="fade"
+                          responsive="true" width="550">
+                    <p:outputPanel id="memberDialogContent">
+                        <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
+                            <p:outputLabel for="membershipNumber" value="Membership #:"/>
+                            <p:inputText id="membershipNumber" 
+                                         value="#{memberBean.editMode ? memberBean.selectedMember.membershipNumber : memberBean.newMember.membershipNumber}"
+                                         readonly="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="firstName" value="First Name:"/>
+                            <p:inputText id="firstName" 
+                                         value="#{memberBean.editMode ? memberBean.selectedMember.firstName : memberBean.newMember.firstName}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="lastName" value="Last Name:"/>
+                            <p:inputText id="lastName" 
+                                         value="#{memberBean.editMode ? memberBean.selectedMember.lastName : memberBean.newMember.lastName}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="email" value="Email:"/>
+                            <p:inputText id="email" 
+                                         value="#{memberBean.editMode ? memberBean.selectedMember.email : memberBean.newMember.email}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="phone" value="Phone:"/>
+                            <p:inputText id="phone" 
+                                         value="#{memberBean.editMode ? memberBean.selectedMember.phone : memberBean.newMember.phone}"
+                                         styleClass="w-full"/>
+
+                            <p:outputLabel for="address" value="Address:"/>
+                            <p:inputTextarea id="address" 
+                                             value="#{memberBean.editMode ? memberBean.selectedMember.address : memberBean.newMember.address}"
+                                             rows="2" styleClass="w-full"/>
+
+                            <p:outputLabel for="maxLoans" value="Max Loans:"/>
+                            <p:spinner id="maxLoans" 
+                                       value="#{memberBean.editMode ? memberBean.selectedMember.maxLoans : memberBean.newMember.maxLoans}"
+                                       min="1" max="20" styleClass="w-full"/>
+                        </h:panelGrid>
+
+                        <div class="flex justify-content-end mt-3">
+                            <p:commandButton value="Cancel" icon="pi pi-times" 
+                                             styleClass="p-button-text"
+                                             onclick="PF('memberDialog').hide()" type="button"/>
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             styleClass="p-button-success ml-2"
+                                             action="#{memberBean.save}"
+                                             update="memberTable :globalGrowl"
+                                             oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"/>
+                        </div>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

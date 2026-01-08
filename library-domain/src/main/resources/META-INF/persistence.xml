@@ -8,17 +8,7 @@
     <persistence-unit name="libraryPU" transaction-type="JTA">
         <jta-data-source>jdbc/libraryDS</jta-data-source>
 
-        <!-- Entidades -->
-        <class>common.BaseEntity</class>
-        <class>catalog.model.Category</class>
-        <class>catalog.model.Book</class>
-        <class>membership.model.Member</class>
-        <class>lending.model.Loan</class>
-
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-
         <properties>
-            <!-- Hibernate/EclipseLink common properties -->
             <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
 
             <!-- EclipseLink (GlassFish default) -->

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Books - LibraryLab</ui:define>
+
+    <ui:define name="breadcrumb">
+        <i class="pi pi-book"></i> Catalog / Books
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="page-header">
+            <h1>Books Management</h1>
+            <p>Manage library book catalog</p>
+        </div>
+
+        <div class="card">
+            <h:form id="bookForm">
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="New Book" icon="pi pi-plus" 
+                                         styleClass="p-button-success mr-2"
+                                         action="#{bookBean.initNewBook}"
+                                         oncomplete="PF('bookDialog').show()"
+                                         update=":bookForm:bookDialogContent"/>
+                        <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         action="#{bookBean.loadBooks}"
+                                         update="bookTable"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <p:dataTable id="bookTable" value="#{bookBean.books}" var="book"
+                             filteredValue="#{bookBean.filteredBooks}"
+                             paginator="true" rows="10"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,20,50"
+                             emptyMessage="No books found"
+                             styleClass="mt-3">
+
+                    <f:facet name="header">
+                        <div class="flex justify-content-between align-items-center">
+                            <span>Book Catalog</span>
+                            <p:inputText id="globalFilter" 
+                                         onkeyup="PF('bookTableWidget').filter()" 
+                                         placeholder="Search..."/>
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="ISBN" sortBy="#{book.isbn}" filterBy="#{book.isbn}">
+                        <h:outputText value="#{book.isbn}"/>
+                    </p:column>
+
+                    <p:column headerText="Title" sortBy="#{book.title}" filterBy="#{book.title}">
+                        <h:outputText value="#{book.title}"/>
+                    </p:column>
+
+                    <p:column headerText="Author" sortBy="#{book.author}" filterBy="#{book.author}">
+                        <h:outputText value="#{book.author}"/>
+                    </p:column>
+
+                    <p:column headerText="Category" sortBy="#{book.categoryName}">
+                        <p:tag value="#{book.categoryName}" severity="info" 
+                               rendered="#{book.categoryName != null}"/>
+                    </p:column>
+
+                    <p:column headerText="Copies" style="text-align: center;">
+                        <h:outputText value="#{book.availableCopies} / #{book.totalCopies}"/>
+                    </p:column>
+
+                    <p:column headerText="Status" sortBy="#{book.status}">
+                        <p:tag value="#{book.status.description}" 
+                               severity="#{book.available ? 'success' : 'warning'}"/>
+                    </p:column>
+
+                    <p:column headerText="Actions" style="width: 150px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                                         action="#{bookBean.prepareEdit(book)}"
+                                         oncomplete="PF('bookDialog').show()"
+                                         update=":bookForm:bookDialogContent">
+                            <p:tooltip value="Edit"/>
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                                         action="#{bookBean.delete(book)}"
+                                         update="bookTable :globalGrowl">
+                            <p:confirm header="Confirm" message="Delete this book?" icon="pi pi-exclamation-triangle"/>
+                            <p:tooltip value="Delete"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="p-button-danger"
+                                     icon="pi pi-check" onclick="PF('cd').hide()"/>
+                    <p:commandButton value="No" type="button" styleClass="p-button-secondary"
+                                     icon="pi pi-times" onclick="PF('cd').hide()"/>
+                </p:confirmDialog>
+
+                <!-- Book Dialog -->
+                <p:dialog header="#{bookBean.editMode ? 'Edit Book' : 'New Book'}" 
+                          widgetVar="bookDialog" modal="true" 
+                          showEffect="fade" hideEffect="fade"
+                          responsive="true" width="500">
+                    <p:outputPanel id="bookDialogContent">
+                        <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
+                            <p:outputLabel for="isbn" value="ISBN:"/>
+                            <p:inputText id="isbn" 
+                                         value="#{bookBean.editMode ? bookBean.selectedBook.isbn : bookBean.newBook.isbn}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="title" value="Title:"/>
+                            <p:inputText id="title" 
+                                         value="#{bookBean.editMode ? bookBean.selectedBook.title : bookBean.newBook.title}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="author" value="Author:"/>
+                            <p:inputText id="author" 
+                                         value="#{bookBean.editMode ? bookBean.selectedBook.author : bookBean.newBook.author}"
+                                         required="true" styleClass="w-full"/>
+
+                            <p:outputLabel for="publisher" value="Publisher:"/>
+                            <p:inputText id="publisher" 
+                                         value="#{bookBean.editMode ? bookBean.selectedBook.publisher : bookBean.newBook.publisher}"
+                                         styleClass="w-full"/>
+
+                            <p:outputLabel for="category" value="Category:"/>
+                            <p:selectOneMenu id="category" 
+                                             value="#{bookBean.editMode ? bookBean.selectedBook.categoryId : bookBean.newBook.categoryId}"
+                                             styleClass="w-full">
+                                <f:selectItem itemLabel="-- Select --" itemValue=""/>
+                                <f:selectItems value="#{bookBean.categories}" var="cat"
+                                               itemLabel="#{cat.name}" itemValue="#{cat.id}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="totalCopies" value="Total Copies:"/>
+                            <p:spinner id="totalCopies" 
+                                       value="#{bookBean.editMode ? bookBean.selectedBook.totalCopies : bookBean.newBook.totalCopies}"
+                                       min="1" max="100" styleClass="w-full"/>
+
+                            <p:outputLabel for="status" value="Status:"/>
+                            <p:selectOneMenu id="status" 
+                                             value="#{bookBean.editMode ? bookBean.selectedBook.status : bookBean.newBook.status}"
+                                             styleClass="w-full">
+                                <f:selectItems value="#{bookBean.statuses}" var="st"
+                                               itemLabel="#{st.description}" itemValue="#{st}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <div class="flex justify-content-end mt-3">
+                            <p:commandButton value="Cancel" icon="pi pi-times" 
+                                             styleClass="p-button-text"
+                                             onclick="PF('bookDialog').hide()" type="button"/>
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             styleClass="p-button-success ml-2"
+                                             action="#{bookBean.save}"
+                                             update="bookTable :globalGrowl"
+                                             oncomplete="if(!args.validationFailed) PF('bookDialog').hide()"/>
+                        </div>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

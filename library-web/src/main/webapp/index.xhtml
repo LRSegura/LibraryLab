@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Dashboard - LibraryLab</ui:define>
+
+    <ui:define name="breadcrumb">
+        <i class="pi pi-home"></i> Dashboard
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="page-header">
+            <h1>Welcome to LibraryLab</h1>
+            <p>Library management system dashboard</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid">
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center">
+                        <div>
+                            <span class="block text-500 font-medium mb-2">Total Books</span>
+                            <div class="text-900 font-bold text-3xl">#{dashboardBean.totalBooks}</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-blue-100 border-round" 
+                             style="width:2.5rem;height:2.5rem">
+                            <i class="pi pi-book text-blue-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-green-500 font-medium">#{dashboardBean.availableBooks} available</span>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center">
+                        <div>
+                            <span class="block text-500 font-medium mb-2">Members</span>
+                            <div class="text-900 font-bold text-3xl">#{dashboardBean.totalMembers}</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-green-100 border-round" 
+                             style="width:2.5rem;height:2.5rem">
+                            <i class="pi pi-users text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-green-500 font-medium">#{dashboardBean.activeMembers} active</span>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center">
+                        <div>
+                            <span class="block text-500 font-medium mb-2">Active Loans</span>
+                            <div class="text-900 font-bold text-3xl">#{dashboardBean.activeLoans}</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-orange-100 border-round" 
+                             style="width:2.5rem;height:2.5rem">
+                            <i class="pi pi-arrow-right-arrow-left text-orange-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-orange-500 font-medium">#{dashboardBean.overdueLoans} overdue</span>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center">
+                        <div>
+                            <span class="block text-500 font-medium mb-2">Categories</span>
+                            <div class="text-900 font-bold text-3xl">#{dashboardBean.totalCategories}</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-purple-100 border-round" 
+                             style="width:2.5rem;height:2.5rem">
+                            <i class="pi pi-tags text-purple-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="grid mt-4">
+            <div class="col-12 lg:col-6">
+                <div class="card">
+                    <h5><i class="pi pi-clock mr-2"></i>Recent Loans</h5>
+                    <p:dataTable value="#{dashboardBean.recentLoans}" var="loan" rows="5"
+                                 emptyMessage="No recent loans">
+                        <p:column headerText="Book">
+                            <h:outputText value="#{loan.bookTitle}"/>
+                        </p:column>
+                        <p:column headerText="Member">
+                            <h:outputText value="#{loan.memberName}"/>
+                        </p:column>
+                        <p:column headerText="Due Date">
+                            <h:outputText value="#{loan.dueDate}"/>
+                        </p:column>
+                        <p:column headerText="Status">
+                            <p:tag value="#{loan.status}" 
+                                   severity="#{loan.overdue ? 'danger' : 'success'}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-6">
+                <div class="card">
+                    <h5><i class="pi pi-exclamation-triangle mr-2 text-orange-500"></i>Overdue Loans</h5>
+                    <p:dataTable value="#{dashboardBean.overdueLoansDetail}" var="loan" rows="5"
+                                 emptyMessage="No overdue loans">
+                        <p:column headerText="Book">
+                            <h:outputText value="#{loan.bookTitle}"/>
+                        </p:column>
+                        <p:column headerText="Member">
+                            <h:outputText value="#{loan.memberName}"/>
+                        </p:column>
+                        <p:column headerText="Days Overdue">
+                            <p:tag value="#{loan.daysOverdue} days" severity="danger"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>
