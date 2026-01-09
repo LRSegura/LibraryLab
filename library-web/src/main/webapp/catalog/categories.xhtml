@@ -19,10 +19,10 @@
         </div>
 
         <div class="card">
-            <h:form id="categoryForm">
+                <h:form id="categoryForm">
                 <p:toolbar>
                     <p:toolbarGroup>
-                        <p:commandButton value="New Category" icon="pi pi-plus" 
+                        <p:commandButton value="New Category" icon="pi pi-plus"
                                          styleClass="p-button-success mr-2"
                                          action="#{categoryBean.initNewCategory}"
                                          oncomplete="PF('categoryDialog').show()"
@@ -36,7 +36,7 @@
                 <p:dataTable id="categoryTable" value="#{categoryBean.categories}" var="category"
                              paginator="true" rows="10"
                              emptyMessage="No categories found"
-                             styleClass="mt-3">
+                             styleClass="mt-3" paginatorPosition="bottom">
 
                     <p:column headerText="Name" sortBy="#{category.name}">
                         <h:outputText value="#{category.name}"/>
@@ -52,54 +52,65 @@
 
                     <p:column headerText="Actions" style="width: 150px; text-align: center;">
                         <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
-                                         action="#{categoryBean.prepareEdit(category)}"
                                          oncomplete="PF('categoryDialog').show()"
-                                         update=":categoryForm:categoryDialogContent">
+                                         update=":categoryForm:categoryDialogContent"
+                                         process="@this">
                             <p:tooltip value="Edit"/>
+                            <f:setPropertyActionListener value="#{category}" target="#{categoryBean.currentCategory}"/>
                         </p:commandButton>
                         <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
                                          action="#{categoryBean.delete(category)}"
-                                         update="categoryTable :globalGrowl">
-                            <p:confirm header="Confirm" message="Delete this category?" icon="pi pi-exclamation-triangle"/>
+                                         update="categoryTable :globalGrowl"
+                                         process="@this">
+                            <p:confirm header="Confirm" message="Delete this category?"
+                                       icon="pi pi-exclamation-triangle"/>
                             <p:tooltip value="Delete"/>
                         </p:commandButton>
+
                     </p:column>
                 </p:dataTable>
 
-                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="p-button-danger"
-                                     icon="pi pi-check" onclick="PF('cd').hide()"/>
-                    <p:commandButton value="No" type="button" styleClass="p-button-secondary"
-                                     icon="pi pi-times" onclick="PF('cd').hide()"/>
-                </p:confirmDialog>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
+                                         icon="pi pi-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                                         icon="pi pi-times" />
+                    </p:confirmDialog>
 
                 <!-- Category Dialog -->
-                <p:dialog header="#{categoryBean.editMode ? 'Edit Category' : 'New Category'}" 
-                          widgetVar="categoryDialog" modal="true" 
+                <p:dialog header="#{categoryBean.currentCategory.id != null ? 'Edit Category' : 'New Category'}"
+                          widgetVar="categoryDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
                           responsive="true" width="450">
                     <p:outputPanel id="categoryDialogContent">
                         <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
                             <p:outputLabel for="name" value="Name:"/>
                             <p:inputText id="name"
-                                         value="#{categoryBean.editMode ? categoryBean.selectedCategory.name : categoryBean.newCategory.name}"
+                                         value="#{categoryBean.currentCategory.name}"
                                          required="true" requiredMessage="Name is required" styleClass="w-full"/>
 
                             <p:outputLabel for="description" value="Description:"/>
                             <p:inputTextarea id="description"
-                                             value="#{categoryBean.editMode ? categoryBean.selectedCategory.description : categoryBean.newCategory.description}"
+                                             value="#{categoryBean.currentCategory.description}"
                                              rows="3" styleClass="w-full"/>
                         </h:panelGrid>
 
                         <div class="flex justify-content-end mt-3">
-                            <p:commandButton value="Cancel" icon="pi pi-times" 
+                            <p:commandButton value="Cancel" icon="pi pi-times"
                                              styleClass="p-button-text"
                                              onclick="PF('categoryDialog').hide()" type="button"/>
-                            <p:commandButton value="Save" icon="pi pi-check" 
+                            <p:commandButton value="Save" icon="pi pi-check"
                                              styleClass="p-button-success ml-2"
                                              action="#{categoryBean.save}"
                                              update="categoryTable :globalGrowl"
-                                             oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"/>
+                                             oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"
+                                             rendered="#{categoryBean.currentCategory.id == null}"/>
+                            <p:commandButton value="Update" icon="pi pi-check"
+                                             styleClass="p-button-success ml-2"
+                                             action="#{categoryBean.update}"
+                                             update="categoryTable :globalGrowl"
+                                             oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"
+                                             rendered="#{categoryBean.currentCategory.id != null}"/>
                         </div>
                     </p:outputPanel>
                 </p:dialog>

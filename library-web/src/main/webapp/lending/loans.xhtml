@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets"
@@ -76,14 +76,14 @@
 
                     <p:column headerText="Loan Date" sortBy="#{loan.loanDate}">
                         <h:outputText value="#{loan.loanDate}">
-                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                     </p:column>
 
                     <p:column headerText="Due Date" sortBy="#{loan.dueDate}">
                         <h:outputText value="#{loan.dueDate}" 
                                       styleClass="#{loan.overdue ? 'text-red-500 font-bold' : ''}">
-                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                         <br/>
                         <small class="#{loan.overdue ? 'text-red-500' : 'text-green-500'}">
@@ -95,7 +95,7 @@
 
                     <p:column headerText="Return Date" sortBy="#{loan.returnDate}">
                         <h:outputText value="#{loan.returnDate}" rendered="#{loan.returnDate != null}">
-                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                         <h:outputText value="-" rendered="#{loan.returnDate == null}"/>
                     </p:column>

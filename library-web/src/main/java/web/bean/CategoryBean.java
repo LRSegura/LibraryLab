@@ -18,13 +18,9 @@ import java.util.List;
 @Setter
 public class CategoryBean extends BasicBean implements Serializable {
 
-
     private CategoryService categoryService;
-
     private List<CategoryDTO> categories;
-    private CategoryDTO selectedCategory;
-    private CategoryDTO newCategory;
-    private boolean editMode;
+    private CategoryDTO currentCategory;
 
     @Inject
     public CategoryBean(CategoryService categoryService) {
@@ -46,34 +42,26 @@ public class CategoryBean extends BasicBean implements Serializable {
     }
 
     public void initNewCategory() {
-        newCategory = new CategoryDTO();
-        editMode = false;
-    }
-
-    public void prepareEdit(CategoryDTO category) {
-        this.selectedCategory = CategoryDTO.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .description(category.getDescription())
-                .bookCount(category.getBookCount())
-                .build();
-        editMode = true;
+        currentCategory = new CategoryDTO();
     }
 
     public void save() {
         Runnable operation = () -> {
-            if (editMode && selectedCategory != null) {
-                categoryService.update(selectedCategory.getId(), selectedCategory);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category updated successfully");
-                loadCategories();
-            } else {
-                categoryService.create(newCategory);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category created successfully");
-                initNewCategory();
-            }
+            categoryService.create(currentCategory);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category created successfully");
+            initNewCategory();
             loadCategories();
         };
         executeOperation(operation, "Saving category");
+    }
+
+    public void update(){
+        Runnable operation = () -> {
+            categoryService.update(currentCategory);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category updated successfully");
+            loadCategories();
+        };
+        executeOperation(operation, "Updating category");
     }
 
     public void delete(CategoryDTO category) {

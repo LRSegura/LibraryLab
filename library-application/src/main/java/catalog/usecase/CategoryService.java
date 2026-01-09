@@ -53,12 +53,12 @@ public class CategoryService extends BaseService<Category> {
     }
 
     @Transactional
-    public CategoryDTO update(Long id, CategoryDTO dto) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+    public CategoryDTO update(CategoryDTO dto) {
+        Category category = categoryRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getId()));
 
         Optional<Category> existingByName = categoryRepository.findByName(dto.getName());
-        if (existingByName.isPresent() && !existingByName.get().getId().equals(id)) {
+        if (existingByName.isPresent() && !existingByName.get().getId().equals(dto.getId())) {
             throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
         }
 

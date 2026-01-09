@@ -73,7 +73,7 @@
 
                     <p:column headerText="Expires">
                         <h:outputText value="#{member.expirationDate}">
-                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                         <p:tag value="Expired" severity="danger" 
                                rendered="#{member.membershipExpired}" styleClass="ml-2"/>
