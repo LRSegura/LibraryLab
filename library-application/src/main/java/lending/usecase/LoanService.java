@@ -4,6 +4,8 @@ import catalog.model.Book;
 import catalog.port.BookRepository;
 import common.BaseEntity;
 import common.BaseService;
+import common.exception.BusinessRuleException;
+import common.exception.EntityNotFoundException;
 import lending.dto.LoanDTO;
 import lending.model.Loan;
 import lending.model.LoanStatus;
@@ -99,22 +101,22 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO borrowBook(Long bookId, Long memberId, String notes) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + bookId));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " , bookId));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " , memberId));
 
         if (!book.isAvailable()) {
-            throw new IllegalStateException("Book '" + book.getTitle() + "' is not available for borrowing");
+            throw new BusinessRuleException("Book '" + book.getTitle() + "' is not available for borrowing");
         }
 
         if (!member.canBorrow()) {
-            throw new IllegalStateException("Member '" + member.getFullName() + "' cannot borrow books");
+            throw new BusinessRuleException("Member '" + member.getFullName() + "' cannot borrow books");
         }
 
         Optional<Loan> existingLoan = loanRepository.findActiveByBookAndMember(book, member);
         if (existingLoan.isPresent()) {
-            throw new IllegalStateException("Member already has an active loan for this book");
+            throw new BusinessRuleException("Member already has an active loan for this book");
         }
 
         book.borrowCopy();
@@ -134,10 +136,10 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO returnBook(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new IllegalArgumentException("Loan not found with id: " + loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
 
         if (loan.getStatus() == LoanStatus.RETURNED) {
-            throw new IllegalStateException("Book has already been returned");
+            throw new BusinessRuleException("Book has already been returned");
         }
 
         loan.returnBook();
@@ -153,10 +155,10 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO renewLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new IllegalArgumentException("Loan not found with id: " + loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
 
         if (!loan.canRenew()) {
-            throw new IllegalStateException("This loan cannot be renewed");
+            throw new BusinessRuleException("This loan cannot be renewed");
         }
 
         loan.renew();
@@ -168,10 +170,10 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO markAsLost(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new IllegalArgumentException("Loan not found with id: " + loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
 
         if (loan.getStatus() == LoanStatus.RETURNED) {
-            throw new IllegalStateException("Cannot mark a returned book as lost");
+            throw new BusinessRuleException("Cannot mark a returned book as lost");
         }
 
         loan.markAsLost();

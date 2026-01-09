@@ -1,5 +1,6 @@
 package web.bean;
 
+import common.exception.ApplicationException;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.validation.ConstraintViolationException;
@@ -12,6 +13,8 @@ public abstract class BasicBean {
             operation.run();
         } catch (ConstraintViolationException exception) {
             exception.getConstraintViolations().forEach(violation -> addErrorMessage(violation.getMessage()));
+        } catch (ApplicationException e) {
+            addErrorMessage(e.getMessage());
         } catch (Exception e) {
             addErrorMessage("An error occurred while executing operation: " + taskDescription);
         }

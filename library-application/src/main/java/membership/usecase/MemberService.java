@@ -1,6 +1,9 @@
 package membership.usecase;
 
 import common.BaseService;
+import common.exception.BusinessRuleException;
+import common.exception.DuplicateEntityException;
+import common.exception.EntityNotFoundException;
 import membership.dto.MemberDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,11 +21,11 @@ public class MemberService extends BaseService<Member> {
     private MemberRepository memberRepository;
 
     @Inject
-    public MemberService(MemberRepository memberRepository){
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    public MemberService(){
+    public MemberService() {
         //Required by proxy
     }
 
@@ -62,10 +65,10 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO create(MemberDTO dto) {
         if (memberRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Member with email '" + dto.getEmail() + "' already exists");
+            throw new DuplicateEntityException("Member with email '" + dto.getEmail() + "' already exists");
         }
         if (memberRepository.existsByMembershipNumber(dto.getMembershipNumber())) {
-            throw new IllegalArgumentException("Member with membership number '" + dto.getMembershipNumber() + "' already exists");
+            throw new DuplicateEntityException("Member with membership number '" + dto.getMembershipNumber() + "' already exists");
         }
 
         Member member = dto.toEntity();
@@ -77,11 +80,11 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO update(MemberDTO dto) {
         Member member = memberRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", dto.getId()));
 
         Optional<Member> existingByEmail = memberRepository.findByEmail(dto.getEmail());
         if (existingByEmail.isPresent() && !existingByEmail.get().getId().equals(dto.getId())) {
-            throw new IllegalArgumentException("Member with email '" + dto.getEmail() + "' already exists");
+            throw new DuplicateEntityException("Member with email '" + dto.getEmail() + "' already exists");
         }
 
         dto.updateEntity(member);
@@ -92,10 +95,10 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public void delete(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
 
         if (member.getActiveLoans() > 0) {
-            throw new IllegalStateException("Cannot delete member with active loans");
+            throw new BusinessRuleException("Cannot delete member with active loans");
         }
 
         memberRepository.delete(member);
@@ -104,7 +107,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO suspend(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
 
         member.setStatus(MemberStatus.SUSPENDED);
         return MemberDTO.fromEntity(member);
@@ -113,10 +116,10 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO activate(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
 
         if (member.isMembershipExpired()) {
-            throw new IllegalStateException("Cannot activate expired membership. Renew first.");
+            throw new BusinessRuleException("Cannot activate expired membership. Renew first.");
         }
 
         member.setStatus(MemberStatus.ACTIVE);
@@ -126,7 +129,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO renewMembership(Long id, int years) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
 
         member.renewMembership(years);
         return MemberDTO.fromEntity(member);

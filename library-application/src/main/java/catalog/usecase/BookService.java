@@ -5,7 +5,10 @@ import catalog.model.Book;
 import catalog.model.Category;
 import catalog.port.BookRepository;
 import catalog.port.CategoryRepository;
+import com.sun.jdi.request.DuplicateRequestException;
 import common.BaseService;
+import common.exception.BusinessRuleException;
+import common.exception.EntityNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -65,7 +68,7 @@ public class BookService extends BaseService<Book> {
 
     public List<BookDTO> findByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , categoryId));
         return bookRepository.findByCategory(category).stream()
                 .map(BookDTO::fromEntity)
                 .toList();
@@ -74,14 +77,14 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public BookDTO create(BookDTO dto) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
-            throw new IllegalArgumentException("Book with ISBN '" + dto.getIsbn() + "' already exists");
+            throw new DuplicateRequestException("Book with ISBN '" + dto.getIsbn() + "' already exists");
         }
 
         Book book = dto.toEntity();
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getCategoryId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , dto.getCategoryId()));
             book.setCategory(category);
         }
 
@@ -94,18 +97,18 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public BookDTO update(BookDTO dto) {
         Book book = bookRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", dto.getId()));
 
         Optional<Book> existingByIsbn = bookRepository.findByIsbn(dto.getIsbn());
         if (existingByIsbn.isPresent() && !existingByIsbn.get().getId().equals(dto.getId())) {
-            throw new IllegalArgumentException("Book with ISBN '" + dto.getIsbn() + "' already exists");
+            throw new DuplicateRequestException("Book with ISBN '" + dto.getIsbn() + "' already exists");
         }
 
         dto.updateEntity(book);
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getCategoryId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , dto.getCategoryId()));
             book.setCategory(category);
         } else {
             book.setCategory(null);
@@ -119,10 +122,10 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public void delete(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", id));
 
         if (book.getAvailableCopies() < book.getTotalCopies()) {
-            throw new IllegalStateException("Cannot delete book with active loans");
+            throw new BusinessRuleException("Cannot delete book with active loans");
         }
 
         bookRepository.delete(book);
@@ -131,11 +134,11 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public void updateCopies(Long id, int totalCopies) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", id));
 
         int loanedCopies = book.getTotalCopies() - book.getAvailableCopies();
         if (totalCopies < loanedCopies) {
-            throw new IllegalArgumentException("Cannot set total copies below currently loaned copies");
+            throw new BusinessRuleException("Cannot set total copies below currently loaned copies");
         }
 
         int availableDiff = totalCopies - book.getTotalCopies();

@@ -10,4 +10,8 @@ public class DuplicateEntityException extends ApplicationException {
     public DuplicateEntityException(String entityName, String field, String value) {
         super(entityName + " with " + field + " '" + value + "' already exists");
     }
+
+    public DuplicateEntityException(String message) {
+        super(message);
+    }
 }

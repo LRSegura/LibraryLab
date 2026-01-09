@@ -3,7 +3,10 @@ package catalog.usecase;
 import catalog.dto.CategoryDTO;
 import catalog.model.Category;
 import catalog.port.CategoryRepository;
+import com.sun.jdi.request.DuplicateRequestException;
 import common.BaseService;
+import common.exception.BusinessRuleException;
+import common.exception.EntityNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -44,7 +47,7 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public CategoryDTO create(CategoryDTO dto) {
         if (categoryRepository.existsByName(dto.getName())) {
-            throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
+            throw new DuplicateRequestException("Category with name '" + dto.getName() + "' already exists");
         }
         Category category = dto.toEntity();
         validateFieldsConstraint(category);
@@ -55,11 +58,11 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public CategoryDTO update(CategoryDTO dto) {
         Category category = categoryRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: ", dto.getId()));
 
         Optional<Category> existingByName = categoryRepository.findByName(dto.getName());
         if (existingByName.isPresent() && !existingByName.get().getId().equals(dto.getId())) {
-            throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
+            throw new DuplicateRequestException("Category with name '" + dto.getName() + "' already exists");
         }
 
         dto.updateEntity(category);
@@ -71,10 +74,10 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public void delete(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: ", id));
 
         if (category.getBooks() != null && !category.getBooks().isEmpty()) {
-            throw new IllegalStateException("Cannot delete category with associated books");
+            throw new BusinessRuleException("Cannot delete category with associated books");
         }
 
         categoryRepository.delete(category);
