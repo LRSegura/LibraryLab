@@ -12,6 +12,7 @@ import lending.usecase.LoanService;
 import lombok.Getter;
 import lombok.Setter;
 import membership.dto.MemberDTO;
+import membership.model.MemberStatus;
 import membership.usecase.MemberService;
 
 import java.io.Serializable;
@@ -31,11 +32,8 @@ public class LoanBean extends BasicBean implements Serializable {
     private List<LoanDTO> filteredLoans;
     private List<BookDTO> availableBooks;
     private List<MemberDTO> activeMembers;
-    
-    private Long selectedBookId;
-    private Long selectedMemberId;
-    private String loanNotes;
-    
+
+    private LoanDTO currentLoan;
     private LoanStatus statusFilter;
 
     @Inject
@@ -54,6 +52,7 @@ public class LoanBean extends BasicBean implements Serializable {
         loadLoans();
         loadAvailableBooks();
         loadActiveMembers();
+        initNewLoan();
     }
 
     public void loadLoans() {
@@ -69,24 +68,22 @@ public class LoanBean extends BasicBean implements Serializable {
     }
 
     public void loadActiveMembers() {
-        activeMembers = memberService.findByStatus(membership.model.MemberStatus.ACTIVE);
+        activeMembers = memberService.findByStatus(MemberStatus.ACTIVE);
     }
 
     public void initNewLoan() {
-        selectedBookId = null;
-        selectedMemberId = null;
-        loanNotes = null;
+        currentLoan = new LoanDTO();
         loadAvailableBooks();
         loadActiveMembers();
     }
 
     public void borrowBook() {
         Runnable operation = () -> {
-            if (selectedBookId == null || selectedMemberId == null) {
-                addWarnMessage( "Please select both a book and a member");
+            if (currentLoan.getBookId() == null || currentLoan.getMemberId() == null) {
+                addWarnMessage("Please select both a book and a member");
                 return;
             }
-            loanService.borrowBook(selectedBookId, selectedMemberId, loanNotes);
+            loanService.borrowBook(currentLoan.getBookId(), currentLoan.getMemberId(), currentLoan.getNotes());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book borrowed successfully");
             initNewLoan();
             loadLoans();
@@ -105,7 +102,6 @@ public class LoanBean extends BasicBean implements Serializable {
     }
 
     public void renewLoan(LoanDTO loan) {
-
         Runnable operation = () -> {
             loanService.renewLoan(loan.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Loan renewed successfully");
@@ -115,7 +111,6 @@ public class LoanBean extends BasicBean implements Serializable {
     }
 
     public void markAsLost(LoanDTO loan) {
-
         Runnable operation = () -> {
             loanService.markAsLost(loan.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book marked as lost");

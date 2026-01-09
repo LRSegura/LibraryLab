@@ -22,7 +22,7 @@
             <h:form id="memberForm">
                 <p:toolbar>
                     <p:toolbarGroup>
-                        <p:commandButton value="New Member" icon="pi pi-plus" 
+                        <p:commandButton value="New Member" icon="pi pi-plus"
                                          styleClass="p-button-success mr-2"
                                          action="#{memberBean.initNewMember}"
                                          oncomplete="PF('memberDialog').show()"
@@ -39,13 +39,13 @@
                              paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              rowsPerPageTemplate="5,10,20,50"
                              emptyMessage="No members found"
-                             styleClass="mt-3">
+                             styleClass="mt-3" paginatorPosition="bottom">
 
                     <f:facet name="header">
                         <div class="flex justify-content-between align-items-center">
                             <span>Library Members</span>
-                            <p:inputText id="globalFilter" 
-                                         onkeyup="PF('memberTableWidget').filter()" 
+                            <p:inputText id="globalFilter"
+                                         onkeyup="PF('memberTableWidget').filter()"
                                          placeholder="Search..."/>
                         </div>
                     </f:facet>
@@ -67,7 +67,7 @@
                     </p:column>
 
                     <p:column headerText="Active Loans" style="text-align: center;">
-                        <p:badge value="#{member.activeLoans}" 
+                        <p:badge value="#{member.activeLoans}"
                                  severity="#{member.activeLoans > 0 ? 'info' : 'secondary'}"/>
                     </p:column>
 
@@ -75,47 +75,49 @@
                         <h:outputText value="#{member.expirationDate}">
                             <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
-                        <p:tag value="Expired" severity="danger" 
+                        <p:tag value="Expired" severity="danger"
                                rendered="#{member.membershipExpired}" styleClass="ml-2"/>
                     </p:column>
 
                     <p:column headerText="Status" sortBy="#{member.status}">
-                        <p:tag value="#{member.status}" 
+                        <p:tag value="#{member.status}"
                                severity="#{memberBean.getStatusSeverity(member.status)}"/>
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 200px; text-align: center;">
                         <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
-                                         action="#{memberBean.prepareEdit(member)}"
                                          oncomplete="PF('memberDialog').show()"
-                                         update=":memberForm:memberDialogContent">
+                                         update=":memberForm:memberDialogContent"
+                                         process="@this">
                             <p:tooltip value="Edit"/>
+                            <f:setPropertyActionListener value="#{member}" target="#{memberBean.currentMember}"/>
                         </p:commandButton>
-                        
+
                         <p:commandButton icon="pi pi-ban" styleClass="p-button-rounded p-button-text p-button-warning"
                                          action="#{memberBean.suspend(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.status == 'ACTIVE'}">
                             <p:tooltip value="Suspend"/>
                         </p:commandButton>
-                        
+
                         <p:commandButton icon="pi pi-check-circle" styleClass="p-button-rounded p-button-text p-button-success"
                                          action="#{memberBean.activate(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.status == 'SUSPENDED'}">
                             <p:tooltip value="Activate"/>
                         </p:commandButton>
-                        
+
                         <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-text p-button-info"
                                          action="#{memberBean.renewMembership(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.membershipExpired}">
                             <p:tooltip value="Renew Membership"/>
                         </p:commandButton>
-                        
+
                         <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
                                          action="#{memberBean.delete(member)}"
-                                         update="memberTable :globalGrowl">
+                                         update="memberTable :globalGrowl"
+                                         process="@this">
                             <p:confirm header="Confirm" message="Delete this member?" icon="pi pi-exclamation-triangle"/>
                             <p:tooltip value="Delete"/>
                         </p:commandButton>
@@ -123,64 +125,71 @@
                 </p:dataTable>
 
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="p-button-danger"
-                                     icon="pi pi-check" onclick="PF('cd').hide()"/>
-                    <p:commandButton value="No" type="button" styleClass="p-button-secondary"
-                                     icon="pi pi-times" onclick="PF('cd').hide()"/>
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
+                                     icon="pi pi-check"/>
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                                     icon="pi pi-times"/>
                 </p:confirmDialog>
 
                 <!-- Member Dialog -->
-                <p:dialog header="#{memberBean.editMode ? 'Edit Member' : 'New Member'}" 
-                          widgetVar="memberDialog" modal="true" 
+                <p:dialog header="#{memberBean.currentMember.id != null ? 'Edit Member' : 'New Member'}"
+                          widgetVar="memberDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
                           responsive="true" width="550">
                     <p:outputPanel id="memberDialogContent">
                         <h:panelGrid columns="2" cellpadding="10" styleClass="w-full">
                             <p:outputLabel for="membershipNumber" value="Membership #:"/>
-                            <p:inputText id="membershipNumber" 
-                                         value="#{memberBean.editMode ? memberBean.selectedMember.membershipNumber : memberBean.newMember.membershipNumber}"
+                            <p:inputText id="membershipNumber"
+                                         value="#{memberBean.currentMember.membershipNumber}"
                                          readonly="true" styleClass="w-full"/>
 
                             <p:outputLabel for="firstName" value="First Name:"/>
                             <p:inputText id="firstName"
-                                         value="#{memberBean.editMode ? memberBean.selectedMember.firstName : memberBean.newMember.firstName}"
+                                         value="#{memberBean.currentMember.firstName}"
                                          required="true" requiredMessage="First Name is required" styleClass="w-full"/>
 
                             <p:outputLabel for="lastName" value="Last Name:"/>
                             <p:inputText id="lastName"
-                                         value="#{memberBean.editMode ? memberBean.selectedMember.lastName : memberBean.newMember.lastName}"
+                                         value="#{memberBean.currentMember.lastName}"
                                          required="true" requiredMessage="Last Name is required" styleClass="w-full"/>
 
                             <p:outputLabel for="email" value="Email:"/>
                             <p:inputText id="email"
-                                         value="#{memberBean.editMode ? memberBean.selectedMember.email : memberBean.newMember.email}"
+                                         value="#{memberBean.currentMember.email}"
                                          required="true" requiredMessage="Email is required" styleClass="w-full"/>
 
                             <p:outputLabel for="phone" value="Phone:"/>
-                            <p:inputText id="phone" 
-                                         value="#{memberBean.editMode ? memberBean.selectedMember.phone : memberBean.newMember.phone}"
+                            <p:inputText id="phone"
+                                         value="#{memberBean.currentMember.phone}"
                                          styleClass="w-full"/>
 
                             <p:outputLabel for="address" value="Address:"/>
-                            <p:inputTextarea id="address" 
-                                             value="#{memberBean.editMode ? memberBean.selectedMember.address : memberBean.newMember.address}"
+                            <p:inputTextarea id="address"
+                                             value="#{memberBean.currentMember.address}"
                                              rows="2" styleClass="w-full"/>
 
                             <p:outputLabel for="maxLoans" value="Max Loans:"/>
-                            <p:spinner id="maxLoans" 
-                                       value="#{memberBean.editMode ? memberBean.selectedMember.maxLoans : memberBean.newMember.maxLoans}"
+                            <p:spinner id="maxLoans"
+                                       value="#{memberBean.currentMember.maxLoans}"
                                        min="1" max="20" styleClass="w-full"/>
                         </h:panelGrid>
 
                         <div class="flex justify-content-end mt-3">
-                            <p:commandButton value="Cancel" icon="pi pi-times" 
+                            <p:commandButton value="Cancel" icon="pi pi-times"
                                              styleClass="p-button-text"
                                              onclick="PF('memberDialog').hide()" type="button"/>
-                            <p:commandButton value="Save" icon="pi pi-check" 
+                            <p:commandButton value="Save" icon="pi pi-check"
                                              styleClass="p-button-success ml-2"
                                              action="#{memberBean.save}"
                                              update="memberTable :globalGrowl"
-                                             oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"/>
+                                             oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"
+                                             rendered="#{memberBean.currentMember.id == null}"/>
+                            <p:commandButton value="Update" icon="pi pi-check"
+                                             styleClass="p-button-success ml-2"
+                                             action="#{memberBean.update}"
+                                             update="memberTable :globalGrowl"
+                                             oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"
+                                             rendered="#{memberBean.currentMember.id != null}"/>
                         </div>
                     </p:outputPanel>
                 </p:dialog>

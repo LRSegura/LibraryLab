@@ -19,8 +19,6 @@ public class BookService extends BaseService<Book> {
     private BookRepository bookRepository;
     private CategoryRepository categoryRepository;
 
-
-
     @Inject
     public BookService(BookRepository bookRepository, CategoryRepository categoryRepository) {
         this.bookRepository = bookRepository;
@@ -93,14 +91,13 @@ public class BookService extends BaseService<Book> {
         return BookDTO.fromEntity(book);
     }
 
-
     @Transactional
-    public BookDTO update(Long id, BookDTO dto) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
+    public BookDTO update(BookDTO dto) {
+        Book book = bookRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + dto.getId()));
 
         Optional<Book> existingByIsbn = bookRepository.findByIsbn(dto.getIsbn());
-        if (existingByIsbn.isPresent() && !existingByIsbn.get().getId().equals(id)) {
+        if (existingByIsbn.isPresent() && !existingByIsbn.get().getId().equals(dto.getId())) {
             throw new IllegalArgumentException("Book with ISBN '" + dto.getIsbn() + "' already exists");
         }
 

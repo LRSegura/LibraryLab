@@ -75,12 +75,12 @@ public class MemberService extends BaseService<Member> {
     }
 
     @Transactional
-    public MemberDTO update(Long id, MemberDTO dto) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+    public MemberDTO update(MemberDTO dto) {
+        Member member = memberRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + dto.getId()));
 
         Optional<Member> existingByEmail = memberRepository.findByEmail(dto.getEmail());
-        if (existingByEmail.isPresent() && !existingByEmail.get().getId().equals(id)) {
+        if (existingByEmail.isPresent() && !existingByEmail.get().getId().equals(dto.getId())) {
             throw new IllegalArgumentException("Member with email '" + dto.getEmail() + "' already exists");
         }
 

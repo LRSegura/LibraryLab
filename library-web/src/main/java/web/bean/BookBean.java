@@ -37,9 +37,7 @@ public class BookBean extends BasicBean implements Serializable {
     private List<BookDTO> books;
     private List<BookDTO> filteredBooks;
     private List<CategoryDTO> categories;
-    private BookDTO selectedBook;
-    private BookDTO newBook;
-    private boolean editMode;
+    private BookDTO currentBook;
 
     @PostConstruct
     public void init() {
@@ -57,42 +55,29 @@ public class BookBean extends BasicBean implements Serializable {
     }
 
     public void initNewBook() {
-        newBook = BookDTO.builder()
+        currentBook = BookDTO.builder()
                 .totalCopies(1)
                 .status(BookStatus.AVAILABLE)
                 .build();
-        editMode = false;
-    }
-
-    public void prepareEdit(BookDTO book) {
-        this.selectedBook = BookDTO.builder()
-                .id(book.getId())
-                .isbn(book.getIsbn())
-                .title(book.getTitle())
-                .author(book.getAuthor())
-                .publisher(book.getPublisher())
-                .publicationDate(book.getPublicationDate())
-                .totalCopies(book.getTotalCopies())
-                .availableCopies(book.getAvailableCopies())
-                .categoryId(book.getCategoryId())
-                .status(book.getStatus())
-                .build();
-        editMode = true;
     }
 
     public void save() {
         Runnable operation = () -> {
-            if (editMode && selectedBook != null) {
-                bookService.update(selectedBook.getId(), selectedBook);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book updated successfully");
-            } else {
-                bookService.create(newBook);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book created successfully");
-                initNewBook();
-            }
+            bookService.create(currentBook);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book created successfully");
+            initNewBook();
             loadBooks();
         };
         executeOperation(operation, "Saving book");
+    }
+
+    public void update() {
+        Runnable operation = () -> {
+            bookService.update(currentBook);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book updated successfully");
+            loadBooks();
+        };
+        executeOperation(operation, "Updating book");
     }
 
     public void delete(BookDTO book) {

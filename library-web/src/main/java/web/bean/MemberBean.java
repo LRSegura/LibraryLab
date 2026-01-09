@@ -19,14 +19,11 @@ import java.util.List;
 @Setter
 public class MemberBean extends BasicBean implements Serializable {
 
-
     private MemberService memberService;
 
     private List<MemberDTO> members;
     private List<MemberDTO> filteredMembers;
-    private MemberDTO selectedMember;
-    private MemberDTO newMember;
-    private boolean editMode;
+    private MemberDTO currentMember;
 
     @Inject
     public MemberBean(MemberService memberService) {
@@ -48,46 +45,32 @@ public class MemberBean extends BasicBean implements Serializable {
     }
 
     public void initNewMember() {
-        newMember = MemberDTO.builder()
+        currentMember = MemberDTO.builder()
                 .membershipNumber(memberService.generateMembershipNumber())
                 .maxLoans(5)
                 .build();
-        editMode = false;
-    }
-
-    public void prepareEdit(MemberDTO member) {
-        this.selectedMember = MemberDTO.builder()
-                .id(member.getId())
-                .membershipNumber(member.getMembershipNumber())
-                .firstName(member.getFirstName())
-                .lastName(member.getLastName())
-                .email(member.getEmail())
-                .phone(member.getPhone())
-                .address(member.getAddress())
-                .status(member.getStatus())
-                .maxLoans(member.getMaxLoans())
-                .build();
-        editMode = true;
     }
 
     public void save() {
-
         Runnable operation = () -> {
-            if (editMode && selectedMember != null) {
-                memberService.update(selectedMember.getId(), selectedMember);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member updated successfully");
-            } else {
-                memberService.create(newMember);
-                addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member created successfully");
-                initNewMember();
-            }
+            memberService.create(currentMember);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member created successfully");
+            initNewMember();
             loadMembers();
         };
         executeOperation(operation, "Saving member");
     }
 
-    public void delete(MemberDTO member) {
+    public void update() {
+        Runnable operation = () -> {
+            memberService.update(currentMember);
+            addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member updated successfully");
+            loadMembers();
+        };
+        executeOperation(operation, "Updating member");
+    }
 
+    public void delete(MemberDTO member) {
         Runnable operation = () -> {
             memberService.delete(member.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member deleted successfully");
@@ -106,7 +89,6 @@ public class MemberBean extends BasicBean implements Serializable {
     }
 
     public void activate(MemberDTO member) {
-
         Runnable operation = () -> {
             memberService.activate(member.getId());
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member activated");

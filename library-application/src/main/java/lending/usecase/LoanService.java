@@ -2,6 +2,7 @@ package lending.usecase;
 
 import catalog.model.Book;
 import catalog.port.BookRepository;
+import common.BaseEntity;
 import common.BaseService;
 import lending.dto.LoanDTO;
 import lending.model.Loan;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class LoanService extends BaseService<Loan> {
+public class LoanService extends BaseService<BaseEntity> {
 
     private LoanRepository loanRepository;
 
@@ -179,8 +180,12 @@ public class LoanService extends BaseService<Loan> {
         Book book = loan.getBook();
         book.setTotalCopies(book.getTotalCopies() - 1);
 
+        validateFieldsConstraint(loan);
+        validateFieldsConstraint(book);
+
         loanRepository.update(loan);
         bookRepository.update(book);
+
 
         return LoanDTO.fromEntity(loan);
     }
