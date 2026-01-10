@@ -9,6 +9,9 @@
     <title><ui:insert name="title">LibraryLab</ui:insert></title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/primeflex@3.3.1/primeflex.css" />
+
     <style>
         .layout-wrapper {
             display: flex;
@@ -93,7 +96,6 @@
 
 <h:body>
     <div class="layout-wrapper">
-        <!-- Sidebar -->
         <div class="layout-sidebar">
             <div class="logo">
                 <i class="pi pi-book" style="margin-right: 0.5rem;"></i>
@@ -128,7 +130,6 @@
             </h:link>
         </div>
 
-        <!-- Main content -->
         <div class="layout-main">
             <div class="layout-topbar">
                 <span><ui:insert name="breadcrumb"/></span>

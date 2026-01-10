@@ -19,7 +19,7 @@
         </div>
 
         <div class="card">
-                <h:form id="categoryForm">
+            <h:form id="categoryForm">
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="New Category" icon="pi pi-plus"
@@ -52,14 +52,14 @@
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 150px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-success mr-2"
                                          oncomplete="PF('categoryDialog').show()"
                                          update=":categoryForm:categoryDialogContent"
                                          process="@this">
                             <p:tooltip value="Edit"/>
                             <f:setPropertyActionListener value="#{category}" target="#{categoryBean.currentCategory}"/>
                         </p:commandButton>
-                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-danger"
                                          action="#{categoryBean.delete(category)}"
                                          update="categoryTable :globalGrowl"
                                          process="@this">
@@ -71,14 +71,13 @@
                     </p:column>
                 </p:dataTable>
 
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
-                                         icon="pi pi-check" />
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
-                                         icon="pi pi-times" />
-                    </p:confirmDialog>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
+                                     icon="pi pi-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                                     icon="pi pi-times" />
+                </p:confirmDialog>
 
-                <!-- Category Dialog -->
                 <p:dialog header="#{categoryBean.currentCategory.id != null ? 'Edit Category' : 'New Category'}"
                           widgetVar="categoryDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
@@ -98,16 +97,16 @@
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-text"
+                                             styleClass="p-button-secondary p-button-outlined mr-2"
                                              onclick="PF('categoryDialog').hide()" type="button"/>
                             <p:commandButton value="Save" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="p-button-success"
                                              action="#{categoryBean.save}"
                                              update="categoryTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"
                                              rendered="#{categoryBean.currentCategory.id == null}"/>
                             <p:commandButton value="Update" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="p-button-success"
                                              action="#{categoryBean.update}"
                                              update="categoryTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"

@@ -69,14 +69,14 @@
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 150px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-success mr-2"
                                          oncomplete="PF('bookDialog').show()"
                                          update=":bookForm:bookDialogContent"
                                          process="@this">
                             <p:tooltip value="Edit"/>
                             <f:setPropertyActionListener value="#{book}" target="#{bookBean.currentBook}"/>
                         </p:commandButton>
-                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-danger"
                                          action="#{bookBean.delete(book)}"
                                          update="bookTable :globalGrowl"
                                          process="@this">
@@ -93,7 +93,6 @@
                                      icon="pi pi-times"/>
                 </p:confirmDialog>
 
-                <!-- Book Dialog -->
                 <p:dialog header="#{bookBean.currentBook.id != null ? 'Edit Book' : 'New Book'}"
                           widgetVar="bookDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
@@ -148,16 +147,16 @@
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-text"
+                                             styleClass="p-button-secondary p-button-outlined mr-2"
                                              onclick="PF('bookDialog').hide()" type="button"/>
                             <p:commandButton value="Save" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="p-button-success"
                                              action="#{bookBean.save}"
                                              update="bookTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('bookDialog').hide()"
                                              rendered="#{bookBean.currentBook.id == null}"/>
                             <p:commandButton value="Update" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="p-button-success"
                                              action="#{bookBean.update}"
                                              update="bookTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('bookDialog').hide()"

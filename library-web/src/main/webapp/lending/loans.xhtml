@@ -102,7 +102,7 @@
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 180px; text-align: center;">
-                        <p:commandButton icon="pi pi-check" styleClass="p-button-rounded p-button-text p-button-success"
+                        <p:commandButton icon="pi pi-check" styleClass="p-button-rounded p-button-success mr-2"
                                          action="#{loanBean.returnBook(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.status == 'ACTIVE' or loan.status == 'OVERDUE'}"
@@ -110,7 +110,7 @@
                             <p:tooltip value="Return Book"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-text p-button-info"
+                        <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-info mr-2"
                                          action="#{loanBean.renewLoan(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.canRenew}"
@@ -119,7 +119,7 @@
                         </p:commandButton>
 
                         <p:commandButton icon="pi pi-exclamation-triangle"
-                                         styleClass="p-button-rounded p-button-text p-button-warning"
+                                         styleClass="p-button-rounded p-button-warning"
                                          action="#{loanBean.markAsLost(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.status == 'ACTIVE' or loan.status == 'OVERDUE'}"
@@ -138,7 +138,6 @@
                                      icon="pi pi-times"/>
                 </p:confirmDialog>
 
-                <!-- New Loan Dialog -->
                 <p:dialog header="New Loan"
                           widgetVar="loanDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
@@ -173,10 +172,10 @@
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-text"
+                                             styleClass="p-button-secondary p-button-outlined mr-2"
                                              onclick="PF('loanDialog').hide()" type="button"/>
                             <p:commandButton value="Create Loan" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="p-button-success"
                                              action="#{loanBean.borrowBook}"
                                              update="loanTable :globalGrowl :loanForm:loanDialogContent"
                                              oncomplete="if(!args.validationFailed) PF('loanDialog').hide()"/>

@@ -17,16 +17,15 @@
             <p>Library management system dashboard</p>
         </div>
 
-        <!-- Stats Cards -->
         <div class="grid">
             <div class="col-12 md:col-6 lg:col-3">
-                <div class="card">
+                <div class="card mb-0 shadow-2">
                     <div class="flex justify-content-between align-items-center">
                         <div>
                             <span class="block text-500 font-medium mb-2">Total Books</span>
                             <div class="text-900 font-bold text-3xl">#{dashboardBean.totalBooks}</div>
                         </div>
-                        <div class="flex align-items-center justify-content-center bg-blue-100 border-round" 
+                        <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
                              style="width:2.5rem;height:2.5rem">
                             <i class="pi pi-book text-blue-500 text-xl"></i>
                         </div>
@@ -36,13 +35,13 @@
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-                <div class="card">
+                <div class="card mb-0 shadow-2">
                     <div class="flex justify-content-between align-items-center">
                         <div>
                             <span class="block text-500 font-medium mb-2">Members</span>
                             <div class="text-900 font-bold text-3xl">#{dashboardBean.totalMembers}</div>
                         </div>
-                        <div class="flex align-items-center justify-content-center bg-green-100 border-round" 
+                        <div class="flex align-items-center justify-content-center bg-green-100 border-round"
                              style="width:2.5rem;height:2.5rem">
                             <i class="pi pi-users text-green-500 text-xl"></i>
                         </div>
@@ -52,13 +51,13 @@
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-                <div class="card">
+                <div class="card mb-0 shadow-2">
                     <div class="flex justify-content-between align-items-center">
                         <div>
                             <span class="block text-500 font-medium mb-2">Active Loans</span>
                             <div class="text-900 font-bold text-3xl">#{dashboardBean.activeLoans}</div>
                         </div>
-                        <div class="flex align-items-center justify-content-center bg-orange-100 border-round" 
+                        <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
                              style="width:2.5rem;height:2.5rem">
                             <i class="pi pi-arrow-right-arrow-left text-orange-500 text-xl"></i>
                         </div>
@@ -68,13 +67,13 @@
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-                <div class="card">
+                <div class="card mb-0 shadow-2">
                     <div class="flex justify-content-between align-items-center">
                         <div>
                             <span class="block text-500 font-medium mb-2">Categories</span>
                             <div class="text-900 font-bold text-3xl">#{dashboardBean.totalCategories}</div>
                         </div>
-                        <div class="flex align-items-center justify-content-center bg-purple-100 border-round" 
+                        <div class="flex align-items-center justify-content-center bg-purple-100 border-round"
                              style="width:2.5rem;height:2.5rem">
                             <i class="pi pi-tags text-purple-500 text-xl"></i>
                         </div>
@@ -83,10 +82,9 @@
             </div>
         </div>
 
-        <!-- Recent Activity -->
         <div class="grid mt-4">
             <div class="col-12 lg:col-6">
-                <div class="card">
+                <div class="card shadow-2">
                     <h5><i class="pi pi-clock mr-2"></i>Recent Loans</h5>
                     <p:dataTable value="#{dashboardBean.recentLoans}" var="loan" rows="5"
                                  emptyMessage="No recent loans">
@@ -100,7 +98,7 @@
                             <h:outputText value="#{loan.dueDate}"/>
                         </p:column>
                         <p:column headerText="Status">
-                            <p:tag value="#{loan.status}" 
+                            <p:tag value="#{loan.status}"
                                    severity="#{loan.overdue ? 'danger' : 'success'}"/>
                         </p:column>
                     </p:dataTable>
@@ -108,7 +106,7 @@
             </div>
 
             <div class="col-12 lg:col-6">
-                <div class="card">
+                <div class="card shadow-2">
                     <h5><i class="pi pi-exclamation-triangle mr-2 text-orange-500"></i>Overdue Loans</h5>
                     <p:dataTable value="#{dashboardBean.overdueLoansDetail}" var="loan" rows="5"
                                  emptyMessage="No overdue loans">
