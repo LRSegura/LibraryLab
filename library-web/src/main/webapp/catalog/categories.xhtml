@@ -23,11 +23,12 @@
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="New Category" icon="pi pi-plus"
-                                         styleClass="p-button-success mr-2"
+                                         styleClass="ui-button-success mr-2"
                                          action="#{categoryBean.initNewCategory}"
                                          oncomplete="PF('categoryDialog').show()"
                                          update=":categoryForm:categoryDialogContent"/>
                         <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         styleClass="ui-button-secondary"
                                          action="#{categoryBean.loadCategories}"
                                          update="categoryTable"
                                          process="@this"/>
@@ -52,14 +53,16 @@
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 150px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-success mr-2"
+                        <p:commandButton icon="pi pi-pencil"
+                                         styleClass="ui-button-rounded ui-button-success ui-button-flat mr-2"
                                          oncomplete="PF('categoryDialog').show()"
                                          update=":categoryForm:categoryDialogContent"
                                          process="@this">
                             <p:tooltip value="Edit"/>
                             <f:setPropertyActionListener value="#{category}" target="#{categoryBean.currentCategory}"/>
                         </p:commandButton>
-                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-danger"
+                        <p:commandButton icon="pi pi-trash"
+                                         styleClass="ui-button-rounded ui-button-danger ui-button-flat"
                                          action="#{categoryBean.delete(category)}"
                                          update="categoryTable :globalGrowl"
                                          process="@this">
@@ -67,14 +70,13 @@
                                        icon="pi pi-exclamation-triangle"/>
                             <p:tooltip value="Delete"/>
                         </p:commandButton>
-
                     </p:column>
                 </p:dataTable>
 
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes ui-button-danger"
                                      icon="pi pi-check" />
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
                                      icon="pi pi-times" />
                 </p:confirmDialog>
 
@@ -97,16 +99,16 @@
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-secondary p-button-outlined mr-2"
+                                             styleClass="ui-button-secondary ui-button-outlined mr-2"
                                              onclick="PF('categoryDialog').hide()" type="button"/>
                             <p:commandButton value="Save" icon="pi pi-check"
-                                             styleClass="p-button-success"
+                                             styleClass="ui-button-success"
                                              action="#{categoryBean.save}"
                                              update="categoryTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"
                                              rendered="#{categoryBean.currentCategory.id == null}"/>
                             <p:commandButton value="Update" icon="pi pi-check"
-                                             styleClass="p-button-success"
+                                             styleClass="ui-button-success"
                                              action="#{categoryBean.update}"
                                              update="categoryTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('categoryDialog').hide()"

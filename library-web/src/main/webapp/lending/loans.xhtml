@@ -23,11 +23,12 @@
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="New Loan" icon="pi pi-plus"
-                                         styleClass="p-button-success mr-2"
+                                         styleClass="ui-button-success mr-2"
                                          action="#{loanBean.initNewLoan}"
                                          oncomplete="PF('loanDialog').show()"
                                          update=":loanForm:loanDialogContent"/>
                         <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         styleClass="ui-button-secondary"
                                          action="#{loanBean.loadLoans}"
                                          update="loanTable"/>
                     </p:toolbarGroup>
@@ -51,58 +52,43 @@
                              styleClass="mt-3"
                              rowStyleClass="#{loan.overdue ? 'bg-red-50' : ''}" paginatorPosition="bottom">
 
-
                     <p:column headerText="Book" sortBy="#{loan.bookTitle}" filterBy="#{loan.bookTitle}">
-                        <div>
-                            <h:outputText value="#{loan.bookTitle}" styleClass="font-bold"/>
-                        </div>
+                        <div><h:outputText value="#{loan.bookTitle}" styleClass="font-bold"/></div>
                         <small class="text-500">#{loan.bookIsbn}</small>
                     </p:column>
-
                     <p:column headerText="Member" sortBy="#{loan.memberName}" filterBy="#{loan.memberName}">
-                        <div>
-                            <h:outputText value="#{loan.memberName}"/>
-                        </div>
+                        <div><h:outputText value="#{loan.memberName}"/></div>
                         <small class="text-500">#{loan.membershipNumber}</small>
                     </p:column>
-
                     <p:column headerText="Loan Date" sortBy="#{loan.loanDate}">
-                        <h:outputText value="#{loan.loanDate}">
-                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
-                        </h:outputText>
+                        <h:outputText value="#{loan.loanDate}"><f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/></h:outputText>
                     </p:column>
-
                     <p:column headerText="Due Date" sortBy="#{loan.dueDate}">
-                        <h:outputText value="#{loan.dueDate}"
-                                      styleClass="#{loan.overdue ? 'text-red-500 font-bold' : ''}">
+                        <h:outputText value="#{loan.dueDate}" styleClass="#{loan.overdue ? 'text-red-500 font-bold' : ''}">
                             <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                         <br/>
                         <small class="#{loan.overdue ? 'text-red-500' : 'text-green-500'}">
                             <h:outputText value="#{loan.daysOverdue} days overdue" rendered="#{loan.overdue}"/>
-                            <h:outputText value="#{loan.daysUntilDue} days left"
-                                          rendered="#{not loan.overdue and loan.status == 'ACTIVE'}"/>
+                            <h:outputText value="#{loan.daysUntilDue} days left" rendered="#{not loan.overdue and loan.status == 'ACTIVE'}"/>
                         </small>
                     </p:column>
-
                     <p:column headerText="Return Date" sortBy="#{loan.returnDate}">
                         <h:outputText value="#{loan.returnDate}" rendered="#{loan.returnDate != null}">
                             <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
                         </h:outputText>
                         <h:outputText value="-" rendered="#{loan.returnDate == null}"/>
                     </p:column>
-
                     <p:column headerText="Renewals" style="text-align: center;">
                         <p:badge value="#{loan.renewalCount}" severity="info"/>
                     </p:column>
-
                     <p:column headerText="Status" sortBy="#{loan.status}">
-                        <p:tag value="#{loan.status.description}"
-                               severity="#{loanBean.getStatusSeverity(loan.status)}"/>
+                        <p:tag value="#{loan.status.description}" severity="#{loanBean.getStatusSeverity(loan.status)}"/>
                     </p:column>
 
                     <p:column headerText="Actions" style="width: 180px; text-align: center;">
-                        <p:commandButton icon="pi pi-check" styleClass="p-button-rounded p-button-success mr-2"
+                        <p:commandButton icon="pi pi-check"
+                                         styleClass="ui-button-rounded ui-button-success ui-button-flat mr-2"
                                          action="#{loanBean.returnBook(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.status == 'ACTIVE' or loan.status == 'OVERDUE'}"
@@ -110,7 +96,8 @@
                             <p:tooltip value="Return Book"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-info mr-2"
+                        <p:commandButton icon="pi pi-replay"
+                                         styleClass="ui-button-rounded ui-button-info ui-button-flat mr-2"
                                          action="#{loanBean.renewLoan(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.canRenew}"
@@ -119,22 +106,21 @@
                         </p:commandButton>
 
                         <p:commandButton icon="pi pi-exclamation-triangle"
-                                         styleClass="p-button-rounded p-button-warning"
+                                         styleClass="ui-button-rounded ui-button-warning ui-button-flat"
                                          action="#{loanBean.markAsLost(loan)}"
                                          update="loanTable :globalGrowl"
                                          rendered="#{loan.status == 'ACTIVE' or loan.status == 'OVERDUE'}"
                                          process="@this">
-                            <p:confirm header="Confirm" message="Mark this book as lost?"
-                                       icon="pi pi-exclamation-triangle"/>
+                            <p:confirm header="Confirm" message="Mark this book as lost?" icon="pi pi-exclamation-triangle"/>
                             <p:tooltip value="Mark as Lost"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
 
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-warning"
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes ui-button-warning"
                                      icon="pi pi-check"/>
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
                                      icon="pi pi-times"/>
                 </p:confirmDialog>
 
@@ -172,10 +158,10 @@
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-secondary p-button-outlined mr-2"
+                                             styleClass="ui-button-secondary ui-button-outlined mr-2"
                                              onclick="PF('loanDialog').hide()" type="button"/>
                             <p:commandButton value="Create Loan" icon="pi pi-check"
-                                             styleClass="p-button-success"
+                                             styleClass="ui-button-success"
                                              action="#{loanBean.borrowBook}"
                                              update="loanTable :globalGrowl :loanForm:loanDialogContent"
                                              oncomplete="if(!args.validationFailed) PF('loanDialog').hide()"/>

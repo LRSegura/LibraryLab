@@ -23,11 +23,12 @@
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="New Member" icon="pi pi-plus"
-                                         styleClass="p-button-success mr-2"
+                                         styleClass="ui-button-success mr-2"
                                          action="#{memberBean.initNewMember}"
                                          oncomplete="PF('memberDialog').show()"
                                          update=":memberForm:memberDialogContent"/>
                         <p:commandButton value="Refresh" icon="pi pi-refresh"
+                                         styleClass="ui-button-secondary"
                                          action="#{memberBean.loadMembers}"
                                          update="memberTable"/>
                     </p:toolbarGroup>
@@ -41,43 +42,32 @@
                              emptyMessage="No members found"
                              styleClass="mt-3" paginatorPosition="bottom">
 
-
                     <p:column headerText="Membership #" sortBy="#{member.membershipNumber}">
                         <h:outputText value="#{member.membershipNumber}" styleClass="font-bold"/>
                     </p:column>
-
                     <p:column headerText="Name" sortBy="#{member.fullName}" filterBy="#{member.fullName}">
                         <h:outputText value="#{member.fullName}"/>
                     </p:column>
-
                     <p:column headerText="Email" sortBy="#{member.email}" filterBy="#{member.email}">
                         <h:outputText value="#{member.email}"/>
                     </p:column>
-
                     <p:column headerText="Phone">
                         <h:outputText value="#{member.phone}"/>
                     </p:column>
-
                     <p:column headerText="Active Loans" style="text-align: center;">
-                        <p:badge value="#{member.activeLoans}"
-                                 severity="#{member.activeLoans > 0 ? 'info' : 'secondary'}"/>
+                        <p:badge value="#{member.activeLoans}" severity="#{member.activeLoans > 0 ? 'info' : 'secondary'}"/>
                     </p:column>
-
                     <p:column headerText="Expires">
-                        <h:outputText value="#{member.expirationDate}">
-                            <f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/>
-                        </h:outputText>
-                        <p:tag value="Expired" severity="danger"
-                               rendered="#{member.membershipExpired}" styleClass="ml-2"/>
+                        <h:outputText value="#{member.expirationDate}"><f:convertDateTime type="localDate" pattern="MMM dd, yyyy"/></h:outputText>
+                        <p:tag value="Expired" severity="danger" rendered="#{member.membershipExpired}" styleClass="ml-2"/>
                     </p:column>
-
                     <p:column headerText="Status" sortBy="#{member.status}">
-                        <p:tag value="#{member.status}"
-                               severity="#{memberBean.getStatusSeverity(member.status)}"/>
+                        <p:tag value="#{member.status}" severity="#{memberBean.getStatusSeverity(member.status)}"/>
                     </p:column>
 
-                    <p:column headerText="Actions" style="width: 200px; text-align: center;">
-                        <p:commandButton icon="pi pi-pencil" styleClass="p-button-rounded p-button-text"
+                    <p:column headerText="Actions" style="width: 220px; text-align: center;">
+                        <p:commandButton icon="pi pi-pencil"
+                                         styleClass="ui-button-rounded ui-button-success ui-button-flat mr-2"
                                          oncomplete="PF('memberDialog').show()"
                                          update=":memberForm:memberDialogContent"
                                          process="@this">
@@ -85,28 +75,32 @@
                             <f:setPropertyActionListener value="#{member}" target="#{memberBean.currentMember}"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-ban" styleClass="p-button-rounded p-button-text p-button-warning"
+                        <p:commandButton icon="pi pi-ban"
+                                         styleClass="ui-button-rounded ui-button-warning ui-button-flat mr-2"
                                          action="#{memberBean.suspend(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.status == 'ACTIVE'}">
                             <p:tooltip value="Suspend"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-check-circle" styleClass="p-button-rounded p-button-text p-button-success"
+                        <p:commandButton icon="pi pi-check-circle"
+                                         styleClass="ui-button-rounded ui-button-success ui-button-flat mr-2"
                                          action="#{memberBean.activate(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.status == 'SUSPENDED'}">
                             <p:tooltip value="Activate"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-replay" styleClass="p-button-rounded p-button-text p-button-info"
+                        <p:commandButton icon="pi pi-replay"
+                                         styleClass="ui-button-rounded ui-button-info ui-button-flat mr-2"
                                          action="#{memberBean.renewMembership(member)}"
                                          update="memberTable :globalGrowl"
                                          rendered="#{member.membershipExpired}">
                             <p:tooltip value="Renew Membership"/>
                         </p:commandButton>
 
-                        <p:commandButton icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger"
+                        <p:commandButton icon="pi pi-trash"
+                                         styleClass="ui-button-rounded ui-button-danger ui-button-flat"
                                          action="#{memberBean.delete(member)}"
                                          update="memberTable :globalGrowl"
                                          process="@this">
@@ -117,13 +111,12 @@
                 </p:dataTable>
 
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger"
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes ui-button-danger"
                                      icon="pi pi-check"/>
-                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary"
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
                                      icon="pi pi-times"/>
                 </p:confirmDialog>
 
-                <!-- Member Dialog -->
                 <p:dialog header="#{memberBean.currentMember.id != null ? 'Edit Member' : 'New Member'}"
                           widgetVar="memberDialog" modal="true"
                           showEffect="fade" hideEffect="fade"
@@ -134,50 +127,38 @@
                             <p:inputText id="membershipNumber"
                                          value="#{memberBean.currentMember.membershipNumber}"
                                          readonly="true" styleClass="w-full"/>
-
                             <p:outputLabel for="firstName" value="First Name:"/>
                             <p:inputText id="firstName"
                                          value="#{memberBean.currentMember.firstName}"
                                          required="true" requiredMessage="First Name is required" styleClass="w-full"/>
-
                             <p:outputLabel for="lastName" value="Last Name:"/>
                             <p:inputText id="lastName"
                                          value="#{memberBean.currentMember.lastName}"
                                          required="true" requiredMessage="Last Name is required" styleClass="w-full"/>
-
                             <p:outputLabel for="email" value="Email:"/>
                             <p:inputText id="email"
                                          value="#{memberBean.currentMember.email}"
                                          required="true" requiredMessage="Email is required" styleClass="w-full"/>
-
                             <p:outputLabel for="phone" value="Phone:"/>
-                            <p:inputText id="phone"
-                                         value="#{memberBean.currentMember.phone}"
-                                         styleClass="w-full"/>
-
+                            <p:inputText id="phone" value="#{memberBean.currentMember.phone}" styleClass="w-full"/>
                             <p:outputLabel for="address" value="Address:"/>
-                            <p:inputTextarea id="address"
-                                             value="#{memberBean.currentMember.address}"
-                                             rows="2" styleClass="w-full"/>
-
+                            <p:inputTextarea id="address" value="#{memberBean.currentMember.address}" rows="2" styleClass="w-full"/>
                             <p:outputLabel for="maxLoans" value="Max Loans:"/>
-                            <p:spinner id="maxLoans"
-                                       value="#{memberBean.currentMember.maxLoans}"
-                                       min="1" max="20" styleClass="w-full"/>
+                            <p:spinner id="maxLoans" value="#{memberBean.currentMember.maxLoans}" min="1" max="20" styleClass="w-full"/>
                         </h:panelGrid>
 
                         <div class="flex justify-content-end mt-3">
                             <p:commandButton value="Cancel" icon="pi pi-times"
-                                             styleClass="p-button-text"
+                                             styleClass="ui-button-secondary ui-button-outlined mr-2"
                                              onclick="PF('memberDialog').hide()" type="button"/>
                             <p:commandButton value="Save" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="ui-button-success"
                                              action="#{memberBean.save}"
                                              update="memberTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"
                                              rendered="#{memberBean.currentMember.id == null}"/>
                             <p:commandButton value="Update" icon="pi pi-check"
-                                             styleClass="p-button-success ml-2"
+                                             styleClass="ui-button-success"
                                              action="#{memberBean.update}"
                                              update="memberTable :globalGrowl"
                                              oncomplete="if(!args.validationFailed) PF('memberDialog').hide()"
