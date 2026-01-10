@@ -41,14 +41,6 @@
                              emptyMessage="No books found"
                              styleClass="mt-3" paginatorPosition="bottom">
 
-                    <f:facet name="header">
-                        <div class="flex justify-content-between align-items-center">
-                            <span>Book Catalog</span>
-                            <p:inputText id="globalFilter"
-                                         onkeyup="PF('bookTableWidget').filter()"
-                                         placeholder="Search..."/>
-                        </div>
-                    </f:facet>
 
                     <p:column headerText="ISBN" sortBy="#{book.isbn}" filterBy="#{book.isbn}">
                         <h:outputText value="#{book.isbn}"/>

@@ -46,4 +46,12 @@ public class Category extends BaseEntity {
         books.remove(book);
         book.setCategory(null);
     }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                "} " + super.toString();
+    }
 }

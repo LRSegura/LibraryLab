@@ -13,7 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -23,6 +25,7 @@ public class BookBean extends BasicBean implements Serializable {
 
     private BookService bookService;
     private CategoryService categoryService;
+    private static final Logger logger = Logger.getLogger(BookBean.class.getName());
 
     @Inject
     public BookBean(BookService bookService, CategoryService categoryService) {
@@ -47,11 +50,13 @@ public class BookBean extends BasicBean implements Serializable {
     }
 
     public void loadBooks() {
-        books = bookService.findAll();
+        books = new ArrayList<>(bookService.findAll());
+        logEntities(books, logger);
     }
 
     public void loadCategories() {
         categories = categoryService.findAll();
+        logEntities(categories, logger);
     }
 
     public void initNewBook() {

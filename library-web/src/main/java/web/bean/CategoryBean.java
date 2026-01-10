@@ -10,7 +10,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -21,6 +23,7 @@ public class CategoryBean extends BasicBean implements Serializable {
     private CategoryService categoryService;
     private List<CategoryDTO> categories;
     private CategoryDTO currentCategory;
+    private static final Logger logger = Logger.getLogger(CategoryBean.class.getName());
 
     @Inject
     public CategoryBean(CategoryService categoryService) {
@@ -38,7 +41,8 @@ public class CategoryBean extends BasicBean implements Serializable {
     }
 
     public void loadCategories() {
-        categories = categoryService.findAll();
+        categories = new ArrayList<>(categoryService.findAll());
+        logEntities(categories, logger);
     }
 
     public void initNewCategory() {

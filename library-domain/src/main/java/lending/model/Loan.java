@@ -116,4 +116,18 @@ public class Loan extends BaseEntity {
     public void markAsLost() {
         this.status = LoanStatus.LOST;
     }
+
+    @Override
+    public String toString() {
+        return "Loan{" +
+                "book=" + book +
+                ", member=" + member +
+                ", loanDate=" + loanDate +
+                ", dueDate=" + dueDate +
+                ", returnDate=" + returnDate +
+                ", status=" + status +
+                ", renewalCount=" + renewalCount +
+                ", notes='" + notes + '\'' +
+                "} " + super.toString();
+    }
 }

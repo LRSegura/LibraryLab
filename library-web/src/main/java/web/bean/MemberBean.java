@@ -11,6 +11,7 @@ import membership.model.MemberStatus;
 import membership.usecase.MemberService;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Named
@@ -41,7 +42,7 @@ public class MemberBean extends BasicBean implements Serializable {
     }
 
     public void loadMembers() {
-        members = memberService.findAll();
+        members = new ArrayList<>(memberService.findAll());
     }
 
     public void initNewMember() {

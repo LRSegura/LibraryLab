@@ -29,7 +29,8 @@
                                          update=":categoryForm:categoryDialogContent"/>
                         <p:commandButton value="Refresh" icon="pi pi-refresh"
                                          action="#{categoryBean.loadCategories}"
-                                         update="categoryTable"/>
+                                         update="categoryTable"
+                                         process="@this"/>
                     </p:toolbarGroup>
                 </p:toolbar>
 

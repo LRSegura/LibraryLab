@@ -41,14 +41,6 @@
                              emptyMessage="No members found"
                              styleClass="mt-3" paginatorPosition="bottom">
 
-                    <f:facet name="header">
-                        <div class="flex justify-content-between align-items-center">
-                            <span>Library Members</span>
-                            <p:inputText id="globalFilter"
-                                         onkeyup="PF('memberTableWidget').filter()"
-                                         placeholder="Search..."/>
-                        </div>
-                    </f:facet>
 
                     <p:column headerText="Membership #" sortBy="#{member.membershipNumber}">
                         <h:outputText value="#{member.membershipNumber}" styleClass="font-bold"/>

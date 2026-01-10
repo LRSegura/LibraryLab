@@ -78,4 +78,17 @@ public class Book extends BaseEntity {
         }
         availableCopies++;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "isbn='" + isbn + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", publicationDate=" + publicationDate +
+                ", totalCopies=" + totalCopies +
+                ", availableCopies=" + availableCopies +
+                "} " + super.toString();
+    }
 }

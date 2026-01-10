@@ -105,4 +105,21 @@ public class Member extends BaseEntity {
             this.status = MemberStatus.ACTIVE;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "membershipNumber='" + membershipNumber + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", registrationDate=" + registrationDate +
+                ", expirationDate=" + expirationDate +
+                ", status=" + status +
+                ", activeLoans=" + activeLoans +
+                ", maxLoans=" + maxLoans +
+                "} " + super.toString();
+    }
 }

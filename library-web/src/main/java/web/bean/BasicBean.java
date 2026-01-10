@@ -1,9 +1,13 @@
 package web.bean;
 
+import common.BaseEntity;
 import common.exception.ApplicationException;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.validation.ConstraintViolationException;
+
+import java.util.Collection;
+import java.util.logging.Logger;
 
 public abstract class BasicBean {
 
@@ -48,5 +52,11 @@ public abstract class BasicBean {
 
     protected void executeScript(String script) {
         org.primefaces.PrimeFaces.current().executeScript(script);
+    }
+
+    protected void logEntities(Collection<?> entities, Logger logger){
+        String message = "Logging entities: " + entities.size() + " entities";
+        logger.info(message);
+        entities.forEach(entity -> logger.info(entity.toString()));
     }
 }

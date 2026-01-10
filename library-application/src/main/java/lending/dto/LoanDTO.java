@@ -85,4 +85,17 @@ public class LoanDTO implements Serializable {
 
         return builder.build();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LoanDTO loanDTO = (LoanDTO) o;
+        return id.equals(loanDTO.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

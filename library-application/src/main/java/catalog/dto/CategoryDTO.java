@@ -48,4 +48,17 @@ public class CategoryDTO implements Serializable {
         category.setName(this.name);
         category.setDescription(this.description);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CategoryDTO that = (CategoryDTO) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

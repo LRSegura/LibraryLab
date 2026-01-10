@@ -16,7 +16,9 @@ import membership.model.MemberStatus;
 import membership.usecase.MemberService;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -24,6 +26,7 @@ import java.util.List;
 @Setter
 public class LoanBean extends BasicBean implements Serializable {
 
+    private static final Logger logger = Logger.getLogger(LoanBean.class.getName());
     private LoanService loanService;
     private BookService bookService;
     private MemberService memberService;
@@ -57,14 +60,16 @@ public class LoanBean extends BasicBean implements Serializable {
 
     public void loadLoans() {
         if (statusFilter != null) {
-            loans = loanService.findByStatus(statusFilter);
+            loans = new ArrayList<>(loanService.findByStatus(statusFilter));
         } else {
-            loans = loanService.findAll();
+            loans = new ArrayList<>(loanService.findAll());
         }
+        logEntities(loans, logger);
     }
 
     public void loadAvailableBooks() {
         availableBooks = bookService.findAvailable();
+        logEntities(availableBooks, logger);
     }
 
     public void loadActiveMembers() {

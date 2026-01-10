@@ -51,14 +51,6 @@
                              styleClass="mt-3"
                              rowStyleClass="#{loan.overdue ? 'bg-red-50' : ''}" paginatorPosition="bottom">
 
-                    <f:facet name="header">
-                        <div class="flex justify-content-between align-items-center">
-                            <span>Loan Records</span>
-                            <p:inputText id="globalFilter"
-                                         onkeyup="PF('loanTableWidget').filter()"
-                                         placeholder="Search..."/>
-                        </div>
-                    </f:facet>
 
                     <p:column headerText="Book" sortBy="#{loan.bookTitle}" filterBy="#{loan.bookTitle}">
                         <div>

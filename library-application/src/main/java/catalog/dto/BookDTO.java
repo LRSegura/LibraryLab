@@ -96,4 +96,19 @@ public class BookDTO implements Serializable {
             book.setStatus(this.status);
         }
     }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BookDTO bookDTO = (BookDTO) o;
+        return id.equals(bookDTO.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

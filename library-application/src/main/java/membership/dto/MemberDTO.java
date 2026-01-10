@@ -104,4 +104,17 @@ public class MemberDTO implements Serializable {
             member.setStatus(this.status);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MemberDTO memberDTO = (MemberDTO) o;
+        return id.equals(memberDTO.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
