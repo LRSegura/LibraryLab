@@ -33,7 +33,8 @@ public class BookService extends BaseService<Book> {
     }
 
     public List<BookDTO> findAll() {
-        return bookRepository.findAll().stream()
+        return bookRepository.findAll()
+                .stream()
                 .map(BookDTO::fromEntity)
                 .toList();
     }
@@ -110,8 +111,6 @@ public class BookService extends BaseService<Book> {
             Category category = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , dto.getCategoryId()));
             book.setCategory(category);
-        } else {
-            book.setCategory(null);
         }
 
         validateFieldsConstraint(book);

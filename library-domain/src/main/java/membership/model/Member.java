@@ -1,6 +1,7 @@
 package membership.model;
 
 import common.BaseEntity;
+import common.exception.BusinessRuleException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -86,14 +87,14 @@ public class Member extends BaseEntity {
 
     public void incrementActiveLoans() {
         if (!canBorrow()) {
-            throw new IllegalStateException("The member cannot borrow more books.");
+            throw new BusinessRuleException("The member cannot borrow more books.");
         }
         activeLoans++;
     }
 
     public void decrementActiveLoans() {
-        if (activeLoans <= 0) {
-            throw new IllegalStateException("No active loans to decrement");
+        if (activeLoans == 0) {
+            throw new BusinessRuleException("No active loans to decrement");
         }
         activeLoans--;
     }
@@ -104,6 +105,26 @@ public class Member extends BaseEntity {
         if (this.status == MemberStatus.EXPIRED) {
             this.status = MemberStatus.ACTIVE;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Member member = (Member) o;
+        return membershipNumber.equals(member.membershipNumber) && firstName.equals(member.firstName)
+                && lastName.equals(member.lastName) && email.equals(member.email);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + membershipNumber.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + email.hashCode();
+        return result;
     }
 
     @Override

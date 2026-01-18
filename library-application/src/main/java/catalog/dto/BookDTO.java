@@ -41,7 +41,7 @@ public class BookDTO implements Serializable {
     @PastOrPresent
     private LocalDate publicationDate;
 
-    @Min(1)
+    @Min(value = 1)
     private int totalCopies;
 
     private int availableCopies;
@@ -79,8 +79,8 @@ public class BookDTO implements Serializable {
         Book book = new Book(isbn, title, author);
         book.setPublisher(publisher);
         book.setPublicationDate(publicationDate);
-        book.setTotalCopies(totalCopies > 0 ? totalCopies : 1);
-        book.setAvailableCopies(totalCopies > 0 ? totalCopies : 1);
+        book.setTotalCopies(totalCopies);
+        book.setAvailableCopies(totalCopies);
         book.setStatus(status != null ? status : BookStatus.AVAILABLE);
         return book;
     }

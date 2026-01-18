@@ -39,7 +39,8 @@ public abstract class BaseRepositoryJpa<T extends BaseEntity> implements BaseRep
 
     @Override
     public List<T> findAll() {
-        return em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass)
+        String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
+        return getEntityManager().createQuery(sql, entityClass)
                 .getResultList();
     }
 

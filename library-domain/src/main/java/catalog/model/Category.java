@@ -48,6 +48,23 @@ public class Category extends BaseEntity {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Category category = (Category) o;
+        return name.equals(category.name) && description.equals(category.description);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Category{" +
                 "name='" + name + '\'' +

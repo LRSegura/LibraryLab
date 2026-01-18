@@ -1,6 +1,7 @@
 package catalog.model;
 
 import common.BaseEntity;
+import common.exception.BusinessRuleException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -48,7 +49,7 @@ public class Book extends BaseEntity {
     private int availableCopies = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @Enumerated(EnumType.STRING)
@@ -67,16 +68,34 @@ public class Book extends BaseEntity {
 
     public void borrowCopy() {
         if (!isAvailable()) {
-            throw new IllegalStateException("No copies are available for the book: " + title);
+            throw new BusinessRuleException("No copies are available for the book: " + title);
         }
         availableCopies--;
     }
 
     public void returnCopy() {
         if (availableCopies >= totalCopies) {
-            throw new IllegalStateException("All copies are already available");
+            throw new BusinessRuleException("All copies are already available");
         }
         availableCopies++;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Book book = (Book) o;
+        return isbn.equals(book.isbn) && title.equals(book.title) && author.equals(book.author);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + isbn.hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + author.hashCode();
+        return result;
     }
 
     @Override

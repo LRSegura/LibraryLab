@@ -3,6 +3,7 @@ package lending.model;
 
 import catalog.model.Book;
 import common.BaseEntity;
+import common.exception.BusinessRuleException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -99,7 +100,7 @@ public class Loan extends BaseEntity {
 
     public void renew(int additionalDays) {
         if (!canRenew()) {
-            throw new IllegalStateException("Cannot renew this loan");
+            throw new BusinessRuleException("Cannot renew this loan");
         }
         this.dueDate = LocalDate.now().plusDays(additionalDays);
         this.renewalCount++;
@@ -107,7 +108,7 @@ public class Loan extends BaseEntity {
 
     public void returnBook() {
         if (status == LoanStatus.RETURNED) {
-            throw new IllegalStateException("The book has already been returned");
+            throw new BusinessRuleException("The book has already been returned");
         }
         this.returnDate = LocalDate.now();
         this.status = LoanStatus.RETURNED;
@@ -115,6 +116,25 @@ public class Loan extends BaseEntity {
 
     public void markAsLost() {
         this.status = LoanStatus.LOST;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Loan loan = (Loan) o;
+        return book.equals(loan.book) && member.equals(loan.member) && loanDate.equals(loan.loanDate) && dueDate.equals(loan.dueDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + book.hashCode();
+        result = 31 * result + member.hashCode();
+        result = 31 * result + loanDate.hashCode();
+        result = 31 * result + dueDate.hashCode();
+        return result;
     }
 
     @Override
