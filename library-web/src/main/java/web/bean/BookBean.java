@@ -73,7 +73,7 @@ public class BookBean extends BasicBean implements Serializable {
             initNewBook();
             loadBooks();
         };
-        executeOperation(operation, "Saving book");
+        executeOperation(operation, "Saving book", logger);
     }
 
     public void update() {
@@ -82,7 +82,7 @@ public class BookBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book updated successfully");
             loadBooks();
         };
-        executeOperation(operation, "Updating book");
+        executeOperation(operation, "Updating book", logger);
     }
 
     public void delete(BookDTO book) {
@@ -91,7 +91,7 @@ public class BookBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book deleted successfully");
             loadBooks();
         };
-        executeOperation(operation, "Deleting book");
+        executeOperation(operation, "Deleting book", logger);
     }
 
     public BookStatus[] getStatuses() {

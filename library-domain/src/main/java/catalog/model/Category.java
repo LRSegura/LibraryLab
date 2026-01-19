@@ -19,13 +19,12 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "category_id"))
 public class Category extends BaseEntity {
 
-
-    @NotBlank(message = "The name is required")
-    @Size(max = 100, message = "The name must be less than 100 characters")
+    @NotBlank(message = "{category.name.required}")
+    @Size(max = 100, message = "{category.name.size}")
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @Size(max = 500, message = "The description must be less than 500 characters")
+    @Size(max = 500, message = "{category.description.size}")
     @Column(length = 500)
     private String description;
 

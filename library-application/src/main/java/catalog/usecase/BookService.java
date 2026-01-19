@@ -5,9 +5,9 @@ import catalog.model.Book;
 import catalog.model.Category;
 import catalog.port.BookRepository;
 import catalog.port.CategoryRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import common.BaseService;
 import common.exception.BusinessRuleException;
+import common.exception.DuplicateEntityException;
 import common.exception.EntityNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -69,7 +69,7 @@ public class BookService extends BaseService<Book> {
 
     public List<BookDTO> findByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , categoryId));
+                .orElseThrow(() -> new EntityNotFoundException("Category", "Id", categoryId));
         return bookRepository.findByCategory(category).stream()
                 .map(BookDTO::fromEntity)
                 .toList();
@@ -78,14 +78,14 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public BookDTO create(BookDTO dto) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
-            throw new DuplicateRequestException("Book with ISBN '" + dto.getIsbn() + "' already exists");
+            throw new DuplicateEntityException("Book", "ISBN", dto.getIsbn());
         }
 
         Book book = dto.toEntity();
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , dto.getCategoryId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Category", "Id", dto.getCategoryId()));
             book.setCategory(category);
         }
 
@@ -98,18 +98,18 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public BookDTO update(BookDTO dto) {
         Book book = bookRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Book", "Id", dto.getId()));
 
         Optional<Book> existingByIsbn = bookRepository.findByIsbn(dto.getIsbn());
         if (existingByIsbn.isPresent() && !existingByIsbn.get().getId().equals(dto.getId())) {
-            throw new DuplicateRequestException("Book with ISBN '" + dto.getIsbn() + "' already exists");
+            throw new DuplicateEntityException("Book", "ISBN", dto.getIsbn());
         }
 
         dto.updateEntity(book);
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " , dto.getCategoryId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Category", "Id", dto.getCategoryId()));
             book.setCategory(category);
         }
 
@@ -121,7 +121,7 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public void delete(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Book", "Id", id));
 
         if (book.getAvailableCopies() < book.getTotalCopies()) {
             throw new BusinessRuleException("Cannot delete book with active loans");
@@ -133,7 +133,7 @@ public class BookService extends BaseService<Book> {
     @Transactional
     public void updateCopies(Long id, int totalCopies) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Book", "Id", id));
 
         int loanedCopies = book.getTotalCopies() - book.getAvailableCopies();
         if (totalCopies < loanedCopies) {

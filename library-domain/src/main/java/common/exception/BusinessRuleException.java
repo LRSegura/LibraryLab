@@ -10,4 +10,12 @@ public class BusinessRuleException extends ApplicationException {
     public BusinessRuleException(String message) {
         super(message);
     }
+
+    public BusinessRuleException(ExceptionMessage exceptionMessage) {
+        super(exceptionMessage);
+    }
+
+    public BusinessRuleException(ExceptionMessage exceptionMessage, Object... params) {
+        super(exceptionMessage, params);
+    }
 }

@@ -93,7 +93,7 @@ public class LoanBean extends BasicBean implements Serializable {
             initNewLoan();
             loadLoans();
         };
-        executeOperation(operation, "Borrowing book");
+        executeOperation(operation, "Borrowing book", logger);
     }
 
     public void returnBook(LoanDTO loan) {
@@ -103,7 +103,7 @@ public class LoanBean extends BasicBean implements Serializable {
             loadLoans();
             loadAvailableBooks();
         };
-        executeOperation(operation, "Returning book");
+        executeOperation(operation, "Returning book", logger);
     }
 
     public void renewLoan(LoanDTO loan) {
@@ -112,7 +112,7 @@ public class LoanBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Loan renewed successfully");
             loadLoans();
         };
-        executeOperation(operation, "Renewing loan");
+        executeOperation(operation, "Renewing loan", logger);
     }
 
     public void markAsLost(LoanDTO loan) {
@@ -121,7 +121,7 @@ public class LoanBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Book marked as lost");
             loadLoans();
         };
-        executeOperation(operation, "Marking book as lost");
+        executeOperation(operation, "Marking book as lost", logger);
     }
 
     public void filterByStatus() {

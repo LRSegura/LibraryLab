@@ -53,7 +53,7 @@ public class LoanService extends BaseService<BaseEntity> {
 
     public List<LoanDTO> findByMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", memberId));
         return loanRepository.findByMember(member).stream()
                 .map(LoanDTO::fromEntity)
                 .toList();
@@ -61,7 +61,7 @@ public class LoanService extends BaseService<BaseEntity> {
 
     public List<LoanDTO> findActiveByMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", memberId));
         return loanRepository.findActiveByMember(member).stream()
                 .map(LoanDTO::fromEntity)
                 .toList();
@@ -69,7 +69,7 @@ public class LoanService extends BaseService<BaseEntity> {
 
     public List<LoanDTO> findByBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + bookId));
+                .orElseThrow(() -> new EntityNotFoundException("Book", "Id", bookId));
         return loanRepository.findByBook(book).stream()
                 .map(LoanDTO::fromEntity)
                 .toList();
@@ -101,10 +101,10 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO borrowBook(Long bookId, Long memberId, String notes) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " , bookId));
+                .orElseThrow(() -> new EntityNotFoundException("Book", "Id", bookId));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " , memberId));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", memberId));
 
         if (!book.isAvailable()) {
             throw new BusinessRuleException("Book '" + book.getTitle() + "' is not available for borrowing");
@@ -136,7 +136,7 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO returnBook(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan", "Id", loanId));
 
         if (loan.getStatus() == LoanStatus.RETURNED) {
             throw new BusinessRuleException("Book has already been returned");
@@ -155,7 +155,7 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO renewLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan", "Id", loanId));
 
         if (!loan.canRenew()) {
             throw new BusinessRuleException("This loan cannot be renewed");
@@ -170,7 +170,7 @@ public class LoanService extends BaseService<BaseEntity> {
     @Transactional
     public LoanDTO markAsLost(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new EntityNotFoundException("Loan not found with id: " , loanId));
+                .orElseThrow(() -> new EntityNotFoundException("Loan", "Id", loanId));
 
         if (loan.getStatus() == LoanStatus.RETURNED) {
             throw new BusinessRuleException("Cannot mark a returned book as lost");

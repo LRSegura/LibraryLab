@@ -13,6 +13,7 @@ import membership.usecase.MemberService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -20,11 +21,13 @@ import java.util.List;
 @Setter
 public class MemberBean extends BasicBean implements Serializable {
 
+    private static final Logger logger = Logger.getLogger(MemberBean.class.getName());
     private MemberService memberService;
 
     private List<MemberDTO> members;
     private List<MemberDTO> filteredMembers;
     private MemberDTO currentMember;
+
 
     @Inject
     public MemberBean(MemberService memberService) {
@@ -59,7 +62,7 @@ public class MemberBean extends BasicBean implements Serializable {
             initNewMember();
             loadMembers();
         };
-        executeOperation(operation, "Saving member");
+        executeOperation(operation, "Saving member", logger);
     }
 
     public void update() {
@@ -68,7 +71,7 @@ public class MemberBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member updated successfully");
             loadMembers();
         };
-        executeOperation(operation, "Updating member");
+        executeOperation(operation, "Updating member", logger);
     }
 
     public void delete(MemberDTO member) {
@@ -77,7 +80,7 @@ public class MemberBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member deleted successfully");
             loadMembers();
         };
-        executeOperation(operation, "Deleting member");
+        executeOperation(operation, "Deleting member", logger);
     }
 
     public void suspend(MemberDTO member) {
@@ -86,7 +89,7 @@ public class MemberBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member suspended");
             loadMembers();
         };
-        executeOperation(operation, "Suspending member");
+        executeOperation(operation, "Suspending member", logger);
     }
 
     public void activate(MemberDTO member) {
@@ -95,7 +98,7 @@ public class MemberBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Member activated");
             loadMembers();
         };
-        executeOperation(operation, "Activating member");
+        executeOperation(operation, "Activating member", logger);
     }
 
     public void renewMembership(MemberDTO member) {
@@ -104,7 +107,7 @@ public class MemberBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Membership renewed for 1 year");
             loadMembers();
         };
-        executeOperation(operation, "Renewing membership");
+        executeOperation(operation, "Renewing membership", logger);
     }
 
     public MemberStatus[] getStatuses() {

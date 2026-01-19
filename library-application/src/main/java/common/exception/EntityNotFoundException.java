@@ -14,4 +14,20 @@ public class EntityNotFoundException extends ApplicationException {
     public EntityNotFoundException(String entityName, String field, String value) {
         super(entityName + " not found with " + field + ": " + value);
     }
+
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
+
+    public EntityNotFoundException(ExceptionMessage exceptionMessage) {
+        super(exceptionMessage);
+    }
+
+    public EntityNotFoundException(ExceptionMessage exceptionMessage, Object... params) {
+        super(exceptionMessage, params);
+    }
+
+    public EntityNotFoundException(String entityName, String field, Object value) {
+        super(ExceptionMessage.ENTITY_NOT_FOUND, entityName, field, value);
+    }
 }

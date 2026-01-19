@@ -65,10 +65,10 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO create(MemberDTO dto) {
         if (memberRepository.existsByEmail(dto.getEmail())) {
-            throw new DuplicateEntityException("Member with email '" + dto.getEmail() + "' already exists");
+            throw new DuplicateEntityException("Member", "Email", dto.getEmail());
         }
         if (memberRepository.existsByMembershipNumber(dto.getMembershipNumber())) {
-            throw new DuplicateEntityException("Member with membership number '" + dto.getMembershipNumber() + "' already exists");
+            throw new DuplicateEntityException("Member", "Membership Number", dto.getMembershipNumber());
         }
 
         Member member = dto.toEntity();
@@ -80,11 +80,11 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO update(MemberDTO dto) {
         Member member = memberRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", dto.getId()));
 
         Optional<Member> existingByEmail = memberRepository.findByEmail(dto.getEmail());
         if (existingByEmail.isPresent() && !existingByEmail.get().getId().equals(dto.getId())) {
-            throw new DuplicateEntityException("Member with email '" + dto.getEmail() + "' already exists");
+            throw new DuplicateEntityException("Member", "Email", dto.getEmail());
         }
 
         dto.updateEntity(member);
@@ -95,7 +95,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public void delete(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", id));
 
         if (member.getActiveLoans() > 0) {
             throw new BusinessRuleException("Cannot delete member with active loans");
@@ -107,7 +107,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO suspend(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", id));
 
         member.setStatus(MemberStatus.SUSPENDED);
         return MemberDTO.fromEntity(member);
@@ -116,7 +116,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO activate(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", id));
 
         if (member.isMembershipExpired()) {
             throw new BusinessRuleException("Cannot activate expired membership. Renew first.");
@@ -129,7 +129,7 @@ public class MemberService extends BaseService<Member> {
     @Transactional
     public MemberDTO renewMembership(Long id, int years) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Member", "Id", id));
 
         member.renewMembership(years);
         return MemberDTO.fromEntity(member);

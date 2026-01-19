@@ -2,6 +2,7 @@ package membership.model;
 
 import common.BaseEntity;
 import common.exception.BusinessRuleException;
+import common.exception.ExceptionMessage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -18,34 +19,34 @@ import java.time.LocalDate;
 @AttributeOverride(name = "id", column = @Column(name = "member_id"))
 public class Member extends BaseEntity {
 
-    @NotBlank(message = "The membership number is required")
-    @Size(max = 20, message = "The membership number must be less than 20 characters")
+    @NotBlank(message = "{member.membership-number.required}")
+    @Size(max = 20, message = "{member.membership-number.size}")
     @Column(name = "membership_number", nullable = false, unique = true, length = 20)
     private String membershipNumber;
 
-    @NotBlank(message = "The first name is required")
-    @Size(max = 100, message = "The first name must be less than 100 characters")
+    @NotBlank(message = "{member.first-name.required}")
+    @Size(max = 100, message = "{member.first-name.size}")
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @NotBlank(message = "The last name is required")
-    @Size(max = 100, message = "The last name must be less than 100 characters")
+    @NotBlank(message = "{member.last-name.required}")
+    @Size(max = 100, message = "{member.last-name.size}")
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @NotBlank(message = "The email is required")
-    @Email(message = "Invalid email")
+    @NotBlank(message = "{member.email.required}")
+    @Email(message = "{member.email.invalid}")
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Size(max = 20, message = "The phone number must be less than 20 characters")
+    @Size(max = 20, message = "{member.phone.size}")
     @Column(length = 20)
     private String phone;
 
-    @Size(max = 255, message = "The address must be less than 255 characters")
+    @Size(max = 255, message = "{member.address.size}")
     private String address;
 
-    @PastOrPresent
+    @PastOrPresent(message = "{member.registration-date.past-or-present}")
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate = LocalDate.now();
 
@@ -56,7 +57,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20)
     private MemberStatus status = MemberStatus.ACTIVE;
 
-    @Min(value = 0, message = "The active loans count cannot be negative")
+    @Min(value = 0, message = "{member.active-loans.min}")
     @Column(name = "active_loans", nullable = false)
     private int activeLoans = 0;
 
@@ -76,9 +77,9 @@ public class Member extends BaseEntity {
     }
 
     public boolean canBorrow() {
-        return status == MemberStatus.ACTIVE 
-               && activeLoans < maxLoans 
-               && !isMembershipExpired();
+        return status == MemberStatus.ACTIVE
+                && activeLoans < maxLoans
+                && !isMembershipExpired();
     }
 
     public boolean isMembershipExpired() {
@@ -87,14 +88,14 @@ public class Member extends BaseEntity {
 
     public void incrementActiveLoans() {
         if (!canBorrow()) {
-            throw new BusinessRuleException("The member cannot borrow more books.");
+            throw new BusinessRuleException(ExceptionMessage.MEMBER_CANNOT_BORROW, getFullName());
         }
         activeLoans++;
     }
 
     public void decrementActiveLoans() {
         if (activeLoans == 0) {
-            throw new BusinessRuleException("No active loans to decrement");
+            throw new BusinessRuleException(ExceptionMessage.MEMBER_NO_ACTIVE_LOANS, getFullName());
         }
         activeLoans--;
     }

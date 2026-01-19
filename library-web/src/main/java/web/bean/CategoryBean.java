@@ -56,7 +56,7 @@ public class CategoryBean extends BasicBean implements Serializable {
             initNewCategory();
             loadCategories();
         };
-        executeOperation(operation, "Saving category");
+        executeOperation(operation, "Saving category", logger);
     }
 
     public void update(){
@@ -65,7 +65,7 @@ public class CategoryBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category updated successfully");
             loadCategories();
         };
-        executeOperation(operation, "Updating category");
+        executeOperation(operation, "Updating category", logger);
     }
 
     public void delete(CategoryDTO category) {
@@ -74,6 +74,6 @@ public class CategoryBean extends BasicBean implements Serializable {
             addInfoMessage(SummaryValues.SUCCESS.getDescription(), "Category deleted successfully");
             loadCategories();
         };
-        executeOperation(operation, "Deleting category");
+        executeOperation(operation, "Deleting category", logger);
     }
 }

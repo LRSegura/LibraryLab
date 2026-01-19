@@ -14,4 +14,16 @@ public class ApplicationException extends RuntimeException {
     public ApplicationException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public ApplicationException(ExceptionMessage exceptionMessage) {
+        super(exceptionMessage.getMessage());
+    }
+
+    public ApplicationException(ExceptionMessage exceptionMessage, Object... params) {
+        super(exceptionMessage.getMessage(params));
+    }
+
+    public ApplicationException(ExceptionMessage exceptionMessage, Throwable cause, Object... params) {
+        super(exceptionMessage.getMessage(params), cause);
+    }
 }

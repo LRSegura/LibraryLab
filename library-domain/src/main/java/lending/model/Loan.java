@@ -1,9 +1,9 @@
 package lending.model;
 
-
 import catalog.model.Book;
 import common.BaseEntity;
 import common.exception.BusinessRuleException;
+import common.exception.ExceptionMessage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -25,21 +25,21 @@ public class Loan extends BaseEntity {
     private static final int DEFAULT_LOAN_DAYS = 14;
     private static final int MAX_RENEWALS = 2;
 
-    @NotNull(message = "The book is required")
+    @NotNull(message = "{loan.book.required}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @NotNull(message = "The member is required")
+    @NotNull(message = "{loan.member.required}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @NotNull(message = "The loan date is required")
+    @NotNull(message = "{loan.loan-date.required}")
     @Column(name = "loan_date", nullable = false)
     private LocalDate loanDate;
 
-    @NotNull(message = "The due date is required")
+    @NotNull(message = "{loan.due-date.required}")
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
@@ -89,9 +89,9 @@ public class Loan extends BaseEntity {
     }
 
     public boolean canRenew() {
-        return status == LoanStatus.ACTIVE 
-               && renewalCount < MAX_RENEWALS 
-               && !isOverdue();
+        return status == LoanStatus.ACTIVE
+                && renewalCount < MAX_RENEWALS
+                && !isOverdue();
     }
 
     public void renew() {
@@ -100,7 +100,8 @@ public class Loan extends BaseEntity {
 
     public void renew(int additionalDays) {
         if (!canRenew()) {
-            throw new BusinessRuleException("Cannot renew this loan");
+            throw new BusinessRuleException(ExceptionMessage.LOAN_CANNOT_RENEW,
+                    member.getFullName(), book.getTitle());
         }
         this.dueDate = LocalDate.now().plusDays(additionalDays);
         this.renewalCount++;
@@ -108,7 +109,8 @@ public class Loan extends BaseEntity {
 
     public void returnBook() {
         if (status == LoanStatus.RETURNED) {
-            throw new BusinessRuleException("The book has already been returned");
+            throw new BusinessRuleException(ExceptionMessage.LOAN_ALREADY_RETURNED,
+                    member.getFullName(), book.getTitle());
         }
         this.returnDate = LocalDate.now();
         this.status = LoanStatus.RETURNED;

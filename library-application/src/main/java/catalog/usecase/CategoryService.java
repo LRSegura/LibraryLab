@@ -3,9 +3,9 @@ package catalog.usecase;
 import catalog.dto.CategoryDTO;
 import catalog.model.Category;
 import catalog.port.CategoryRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import common.BaseService;
 import common.exception.BusinessRuleException;
+import common.exception.DuplicateEntityException;
 import common.exception.EntityNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -47,7 +47,7 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public CategoryDTO create(CategoryDTO dto) {
         if (categoryRepository.existsByName(dto.getName())) {
-            throw new DuplicateRequestException("Category with name '" + dto.getName() + "' already exists");
+            throw new DuplicateEntityException("Category", "Name", dto.getName());
         }
         Category category = dto.toEntity();
         validateFieldsConstraint(category);
@@ -58,11 +58,11 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public CategoryDTO update(CategoryDTO dto) {
         Category category = categoryRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: ", dto.getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Category", "Id", dto.getId()));
 
         Optional<Category> existingByName = categoryRepository.findByName(dto.getName());
         if (existingByName.isPresent() && !existingByName.get().getId().equals(dto.getId())) {
-            throw new DuplicateRequestException("Category with name '" + dto.getName() + "' already exists");
+            throw new DuplicateEntityException("Category", "Name", dto.getName());
         }
 
         dto.updateEntity(category);
@@ -74,7 +74,7 @@ public class CategoryService extends BaseService<Category> {
     @Transactional
     public void delete(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: ", id));
+                .orElseThrow(() -> new EntityNotFoundException("Category", "Id", id));
 
         if (category.getBooks() != null && !category.getBooks().isEmpty()) {
             throw new BusinessRuleException("Cannot delete category with associated books");

@@ -2,6 +2,7 @@ package catalog.model;
 
 import common.BaseEntity;
 import common.exception.BusinessRuleException;
+import common.exception.ExceptionMessage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -18,33 +19,33 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Book extends BaseEntity {
 
-    @NotBlank(message = "The ISBN is required")
-    @Size(message = "ISBN must be between 10 and 17 characters", min = 10, max = 17)
+    @NotBlank(message = "{book.isbn.required}")
+    @Size(message = "{book.isbn.size}", min = 10, max = 17)
     @Column(nullable = false, unique = true, length = 17)
     private String isbn;
 
-    @NotBlank(message = "The title is required")
-    @Size(max = 255, message = "The title must be less than 255 characters")
+    @NotBlank(message = "{book.title.required}")
+    @Size(max = 255, message = "{book.title.size}")
     @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "The author is required")
-    @Size(max = 255, message = "The author name must be less than 255 characters")
+    @NotBlank(message = "{book.author.required}")
+    @Size(max = 255, message = "{book.author.size}")
     @Column(nullable = false)
     private String author;
 
-    @Size(max = 100, message = "The publisher name must be less than 100 characters")
+    @Size(max = 100, message = "{book.publisher.size}")
     @Column(length = 100)
     private String publisher;
 
-    @PastOrPresent
+    @PastOrPresent(message = "{book.publication-date.past-or-present}")
     private LocalDate publicationDate;
 
-    @Min(value = 1, message = "The total number of copies must be at least 1")
+    @Min(value = 1, message = "{book.total-copies.min}")
     @Column(nullable = false)
     private int totalCopies = 1;
 
-    @Min(value = 0, message = "The number of available copies must be greater than or equal to zero")
+    @Min(value = 0, message = "{book.available-copies.min}")
     @Column(nullable = false)
     private int availableCopies = 1;
 
@@ -68,14 +69,14 @@ public class Book extends BaseEntity {
 
     public void borrowCopy() {
         if (!isAvailable()) {
-            throw new BusinessRuleException("No copies are available for the book: " + title);
+            throw new BusinessRuleException(ExceptionMessage.BOOK_NO_COPIES_AVAILABLE, title);
         }
         availableCopies--;
     }
 
     public void returnCopy() {
         if (availableCopies >= totalCopies) {
-            throw new BusinessRuleException("All copies are already available");
+            throw new BusinessRuleException(ExceptionMessage.BOOK_ALL_COPIES_AVAILABLE, title);
         }
         availableCopies++;
     }
