@@ -5,12 +5,13 @@ import catalog.usecase.BookService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
+import web.rest.dto.ApiResponse;
 import web.rest.dto.BookCreateRequest;
 import web.rest.dto.BookUpdateRequest;
 import web.rest.mapper.BookMapper;
 
+import java.net.URI;
 import java.util.List;
 
 @Path("/books")
@@ -31,8 +32,8 @@ public class BookResource {
     }
 
     @GET
-    public List<BookDTO> findAll() {
-        return bookService.findAll();
+    public ApiResponse<List<BookDTO>> findAll() {
+        return new ApiResponse<>(bookService.findAll());
     }
 
     @GET
@@ -55,13 +56,13 @@ public class BookResource {
 
     @GET
     @Path("/search/title")
-    public List<BookDTO> findByTitle(@QueryParam("q") String title) {
+    public List<BookDTO> findByTitle(@QueryParam("title") String title) {
         return bookService.findByTitle(title);
     }
 
     @GET
     @Path("/search/author")
-    public List<BookDTO> findByAuthor(@QueryParam("q") String author) {
+    public List<BookDTO> findByAuthor(@QueryParam("author") String author) {
         return bookService.findByAuthor(author);
     }
 
@@ -78,10 +79,11 @@ public class BookResource {
     }
 
     @POST
-    public Response create(@Valid BookCreateRequest request) {
+    public Response create(@Valid BookCreateRequest request, @Context UriInfo uriInfo) {
         BookDTO dto = bookMapper.toDto(request);
         BookDTO created = bookService.create(dto);
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        URI uriBuilder = uriInfo.getAbsolutePathBuilder().path(created.getId().toString()).build();
+        return Response.created(uriBuilder).entity(created).build();
     }
 
     @PUT

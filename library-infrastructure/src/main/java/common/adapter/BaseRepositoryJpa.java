@@ -47,6 +47,7 @@ public abstract class BaseRepositoryJpa<T extends BaseEntity> implements BaseRep
     @Override
     public void save(T entity) {
         em.persist(entity);
+        em.flush();
     }
 
     @Override
