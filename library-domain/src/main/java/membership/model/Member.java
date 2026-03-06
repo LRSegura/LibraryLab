@@ -19,6 +19,9 @@ import java.time.LocalDate;
 @AttributeOverride(name = "id", column = @Column(name = "member_id"))
 public class Member extends BaseEntity {
 
+    public static final int DEFAULT_MAX_LOANS = 5;
+    public static final int DEFAULT_MEMBERSHIP_YEARS = 1;
+
     @NotBlank(message = "{member.membership-number.required}")
     @Size(max = 20, message = "{member.membership-number.size}")
     @Column(name = "membership_number", nullable = false, unique = true, length = 20)
@@ -62,14 +65,20 @@ public class Member extends BaseEntity {
     private int activeLoans = 0;
 
     @Column(name = "max_loans", nullable = false)
-    private int maxLoans = 5;
+    private int maxLoans = DEFAULT_MAX_LOANS;
 
     public Member(String membershipNumber, String firstName, String lastName, String email) {
+        this(membershipNumber, firstName, lastName, email, DEFAULT_MAX_LOANS, DEFAULT_MEMBERSHIP_YEARS);
+    }
+
+    public Member(String membershipNumber, String firstName, String lastName, String email,
+                  int maxLoans, int membershipYears) {
         this.membershipNumber = membershipNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.expirationDate = LocalDate.now().plusYears(1);
+        this.maxLoans = maxLoans;
+        this.expirationDate = LocalDate.now().plusYears(membershipYears);
     }
 
     public String getFullName() {

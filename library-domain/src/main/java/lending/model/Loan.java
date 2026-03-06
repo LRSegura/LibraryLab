@@ -22,8 +22,8 @@ import java.time.temporal.ChronoUnit;
 @AttributeOverride(name = "id", column = @Column(name = "loan_id"))
 public class Loan extends BaseEntity {
 
-    private static final int DEFAULT_LOAN_DAYS = 14;
-    private static final int MAX_RENEWALS = 2;
+    public static final int DEFAULT_LOAN_DAYS = 14;
+    public static final int DEFAULT_MAX_RENEWALS = 2;
 
     @NotNull(message = "{loan.book.required}")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,10 +57,7 @@ public class Loan extends BaseEntity {
     private String notes;
 
     public Loan(Book book, Member member) {
-        this.book = book;
-        this.member = member;
-        this.loanDate = LocalDate.now();
-        this.dueDate = loanDate.plusDays(DEFAULT_LOAN_DAYS);
+        this(book, member, DEFAULT_LOAN_DAYS);
     }
 
     public Loan(Book book, Member member, int loanDays) {
@@ -89,21 +86,25 @@ public class Loan extends BaseEntity {
     }
 
     public boolean canRenew() {
+        return canRenew(DEFAULT_MAX_RENEWALS);
+    }
+
+    public boolean canRenew(int maxRenewals) {
         return status == LoanStatus.ACTIVE
-                && renewalCount < MAX_RENEWALS
+                && renewalCount < maxRenewals
                 && !isOverdue();
     }
 
     public void renew() {
-        renew(DEFAULT_LOAN_DAYS);
+        renew(DEFAULT_LOAN_DAYS, DEFAULT_MAX_RENEWALS);
     }
 
-    public void renew(int additionalDays) {
-        if (!canRenew()) {
+    public void renew(int renewalDays, int maxRenewals) {
+        if (!canRenew(maxRenewals)) {
             throw new BusinessRuleException(ExceptionMessage.LOAN_CANNOT_RENEW,
                     member.getFullName(), book.getTitle());
         }
-        this.dueDate = LocalDate.now().plusDays(additionalDays);
+        this.dueDate = LocalDate.now().plusDays(renewalDays);
         this.renewalCount++;
     }
 

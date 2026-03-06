@@ -49,9 +49,11 @@ public class MemberBean extends BasicBean implements Serializable {
     }
 
     public void initNewMember() {
+        // Uses the configured default max loans from MicroProfile Config
+        // instead of a hardcoded value
         currentMember = MemberDTO.builder()
                 .membershipNumber(memberService.generateMembershipNumber())
-                .maxLoans(5)
+                .maxLoans(memberService.getDefaultMaxLoans())
                 .build();
     }
 

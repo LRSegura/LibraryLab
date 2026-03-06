@@ -4,6 +4,7 @@ import catalog.model.Book;
 import catalog.port.BookRepository;
 import common.BaseEntity;
 import common.BaseService;
+import common.config.LibraryConfig;
 import common.exception.BusinessRuleException;
 import common.exception.EntityNotFoundException;
 import lending.dto.LoanDTO;
@@ -24,38 +25,39 @@ import java.util.Optional;
 public class LoanService extends BaseService<BaseEntity> {
 
     private LoanRepository loanRepository;
-
     private BookRepository bookRepository;
-
     private MemberRepository memberRepository;
+    private LibraryConfig libraryConfig;
 
     @Inject
-    public LoanService(LoanRepository loanRepository, BookRepository bookRepository, MemberRepository memberRepository) {
+    public LoanService(LoanRepository loanRepository, BookRepository bookRepository,
+                       MemberRepository memberRepository, LibraryConfig libraryConfig) {
         this.loanRepository = loanRepository;
         this.bookRepository = bookRepository;
         this.memberRepository = memberRepository;
+        this.libraryConfig = libraryConfig;
     }
 
-    public LoanService(){
-        //Required by proxy
+    public LoanService() {
+        // Required by CDI proxy
     }
 
     public List<LoanDTO> findAll() {
         return loanRepository.findAll().stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
     public Optional<LoanDTO> findById(Long id) {
         return loanRepository.findById(id)
-                .map(LoanDTO::fromEntity);
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()));
     }
 
     public List<LoanDTO> findByMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member", "Id", memberId));
         return loanRepository.findByMember(member).stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
@@ -63,7 +65,7 @@ public class LoanService extends BaseService<BaseEntity> {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member", "Id", memberId));
         return loanRepository.findActiveByMember(member).stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
@@ -71,25 +73,25 @@ public class LoanService extends BaseService<BaseEntity> {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book", "Id", bookId));
         return loanRepository.findByBook(book).stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
     public List<LoanDTO> findByStatus(LoanStatus status) {
         return loanRepository.findByStatus(status).stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
     public List<LoanDTO> findOverdueLoans() {
         return loanRepository.findOverdueLoans().stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
     public List<LoanDTO> findLoansDueBefore(LocalDate date) {
         return loanRepository.findByDueDateBefore(date).stream()
-                .map(LoanDTO::fromEntity)
+                .map(loan -> LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals()))
                 .toList();
     }
 
@@ -122,7 +124,8 @@ public class LoanService extends BaseService<BaseEntity> {
         book.borrowCopy();
         member.incrementActiveLoans();
 
-        Loan loan = new Loan(book, member);
+        // Uses configured loan duration instead of hardcoded default
+        Loan loan = new Loan(book, member, libraryConfig.getDefaultLoanDays());
         if (notes != null && !notes.isBlank()) {
             loan.setNotes(notes);
         }
@@ -130,7 +133,7 @@ public class LoanService extends BaseService<BaseEntity> {
         loanRepository.save(loan);
         bookRepository.update(book);
 
-        return LoanDTO.fromEntity(loan);
+        return LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals());
     }
 
     @Transactional
@@ -149,7 +152,7 @@ public class LoanService extends BaseService<BaseEntity> {
         loanRepository.update(loan);
         bookRepository.update(loan.getBook());
 
-        return LoanDTO.fromEntity(loan);
+        return LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals());
     }
 
     @Transactional
@@ -157,14 +160,15 @@ public class LoanService extends BaseService<BaseEntity> {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new EntityNotFoundException("Loan", "Id", loanId));
 
-        if (!loan.canRenew()) {
+        if (!loan.canRenew(libraryConfig.getMaxRenewals())) {
             throw new BusinessRuleException("This loan cannot be renewed");
         }
 
-        loan.renew();
+        // Uses configured renewal days and max renewals
+        loan.renew(libraryConfig.getRenewalDays(), libraryConfig.getMaxRenewals());
         loanRepository.update(loan);
 
-        return LoanDTO.fromEntity(loan);
+        return LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals());
     }
 
     @Transactional
@@ -188,8 +192,7 @@ public class LoanService extends BaseService<BaseEntity> {
         loanRepository.update(loan);
         bookRepository.update(book);
 
-
-        return LoanDTO.fromEntity(loan);
+        return LoanDTO.fromEntity(loan, libraryConfig.getMaxRenewals());
     }
 
     @Transactional

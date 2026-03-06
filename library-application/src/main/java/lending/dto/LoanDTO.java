@@ -57,7 +57,12 @@ public class LoanDTO implements Serializable {
 
     private boolean canRenew;
 
+
     public static LoanDTO fromEntity(Loan loan) {
+        return fromEntity(loan, Loan.DEFAULT_MAX_RENEWALS);
+    }
+
+    public static LoanDTO fromEntity(Loan loan, int maxRenewals) {
         LoanDTOBuilder builder = LoanDTO.builder()
                 .id(loan.getId())
                 .loanDate(loan.getLoanDate())
@@ -69,18 +74,18 @@ public class LoanDTO implements Serializable {
                 .overdue(loan.isOverdue())
                 .daysOverdue(loan.getDaysOverdue())
                 .daysUntilDue(loan.getDaysUntilDue())
-                .canRenew(loan.canRenew());
+                .canRenew(loan.canRenew(maxRenewals));
 
         if (loan.getBook() != null) {
             builder.bookId(loan.getBook().getId())
-                   .bookTitle(loan.getBook().getTitle())
-                   .bookIsbn(loan.getBook().getIsbn());
+                    .bookTitle(loan.getBook().getTitle())
+                    .bookIsbn(loan.getBook().getIsbn());
         }
 
         if (loan.getMember() != null) {
             builder.memberId(loan.getMember().getId())
-                   .memberName(loan.getMember().getFullName())
-                   .membershipNumber(loan.getMember().getMembershipNumber());
+                    .memberName(loan.getMember().getFullName())
+                    .membershipNumber(loan.getMember().getMembershipNumber());
         }
 
         return builder.build();

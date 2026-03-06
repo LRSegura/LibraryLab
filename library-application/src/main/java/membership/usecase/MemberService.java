@@ -1,6 +1,7 @@
 package membership.usecase;
 
 import common.BaseService;
+import common.config.LibraryConfig;
 import common.exception.BusinessRuleException;
 import common.exception.DuplicateEntityException;
 import common.exception.EntityNotFoundException;
@@ -19,14 +20,16 @@ import java.util.Optional;
 public class MemberService extends BaseService<Member> {
 
     private MemberRepository memberRepository;
+    private LibraryConfig libraryConfig;
 
     @Inject
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, LibraryConfig libraryConfig) {
         this.memberRepository = memberRepository;
+        this.libraryConfig = libraryConfig;
     }
 
     public MemberService() {
-        //Required by proxy
+        // Required by CDI proxy
     }
 
     public List<MemberDTO> findAll() {
@@ -71,7 +74,10 @@ public class MemberService extends BaseService<Member> {
             throw new DuplicateEntityException("Member", "Membership Number", dto.getMembershipNumber());
         }
 
-        Member member = dto.toEntity();
+        // Uses configured defaults for max loans and membership duration
+        Member member = dto.toEntity(
+                libraryConfig.getDefaultMaxLoans(),
+                libraryConfig.getDefaultMembershipYears());
         validateFieldsConstraint(member);
         memberRepository.save(member);
         return MemberDTO.fromEntity(member);
@@ -137,5 +143,14 @@ public class MemberService extends BaseService<Member> {
 
     public String generateMembershipNumber() {
         return "MEM-" + System.currentTimeMillis();
+    }
+
+    /**
+     * Returns the configured default max loans.
+     * Useful for the web layer to initialize new member forms
+     * with the correct default value.
+     */
+    public int getDefaultMaxLoans() {
+        return libraryConfig.getDefaultMaxLoans();
     }
 }

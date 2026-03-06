@@ -82,12 +82,24 @@ public class MemberDTO implements Serializable {
     }
 
     public Member toEntity() {
-        Member member = new Member(membershipNumber, firstName, lastName, email);
+        return toEntity(Member.DEFAULT_MAX_LOANS, Member.DEFAULT_MEMBERSHIP_YEARS);
+    }
+
+    /**
+     * Creates entity using configured default values from MicroProfile Config.
+     * If the DTO specifies maxLoans > 0, that value takes precedence over the
+     * configured default (respecting user-specified overrides in the UI).
+     *
+     * @param configMaxLoans       default max loans from config
+     * @param configMembershipYears default membership duration from config
+     */
+    public Member toEntity(int configMaxLoans, int configMembershipYears) {
+        // Use DTO value if explicitly set, otherwise fall back to config default
+        int effectiveMaxLoans = maxLoans > 0 ? maxLoans : configMaxLoans;
+        Member member = new Member(membershipNumber, firstName, lastName, email,
+                effectiveMaxLoans, configMembershipYears);
         member.setPhone(phone);
         member.setAddress(address);
-        if (maxLoans > 0) {
-            member.setMaxLoans(maxLoans);
-        }
         return member;
     }
 
