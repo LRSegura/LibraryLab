@@ -1,0 +1,77 @@
+# =============================================================================
+# LibraryLab — Docker Compose (Local Development)
+#
+# Services:
+#   postgres   - PostgreSQL 17 database
+#   librarylab - GlassFish 8 with the library WAR
+#
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose up -d --build      # Rebuild and start
+#   docker compose logs -f librarylab # Follow app logs
+#   docker compose down -v            # Stop and remove volumes
+#
+# Access:
+#   Application:  http://localhost:8080/library
+#   REST API:     http://localhost:8080/library/api/v1
+#   GlassFish UI: http://localhost:4848
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:17-alpine
+    container_name: librarylab-db
+    environment:
+      POSTGRES_DB: librarydb
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library_user -d librarydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - librarylab-net
+
+  # ---------------------------------------------------------------------------
+  # GlassFish 8 Application Server
+  # ---------------------------------------------------------------------------
+  librarylab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: librarylab-app
+    environment:
+      # These override the defaults baked into the JDBC pool at build time.
+      # GlassFish reads them at pool-creation time (during image build),
+      # but keeping them here documents the expected configuration.
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: librarydb
+      DB_USER: library_user
+      DB_PASSWORD: library_password
+    ports:
+      - "8080:8080"   # Application HTTP
+      - "4848:4848"   # GlassFish Admin Console
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - librarylab-net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  librarylab-net:
+    driver: bridge
