@@ -34,6 +34,43 @@
             <version>15.0.0</version>
             <classifier>jakarta</classifier>
         </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--
+            jersey-common provides the JAX-RS RuntimeDelegate implementation needed at
+            test time so that Response.ok().build() / Response.status().build() work.
+            Jersey 3.1.x implements Jakarta REST 3.1, which is the JAX-RS version
+            bundled in jakarta.jakartaee-web-api:11.0.0. The jakarta.ws.rs-api
+            transitive dependency is excluded to avoid duplicating the API already
+            on the classpath via the provided jakartaee-web-api.
+        -->
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>3.1.9</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.ws.rs</groupId>
+                    <artifactId>jakarta.ws.rs-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
