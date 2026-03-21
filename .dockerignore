@@ -1,0 +1,36 @@
+# =============================================================================
+# .dockerignore — LibraryLab
+# Exclude files that are not needed in the Docker build context
+# =============================================================================
+
+# Build outputs (the builder stage compiles from source)
+**/target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# Git
+.git/
+.gitignore
+
+# Docker (avoid recursive copy)
+docker-compose.yml
+docker-compose.override.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed in image)
+*.md
+!library-web/src/**/*.md
+
+# Postman collection
+*.postman_collection.json
